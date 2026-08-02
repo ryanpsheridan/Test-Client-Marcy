@@ -26,7 +26,7 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	-->
 	<section class="featured" id="featured">
 		<div class="featured-stage">
-			<button type="button" class="featured-image-link" id="featured-link">
+			<button type="button" class="featured-image-link" id="featured-link" data-slug={projects[0].slug}>
 				<img
 					src={projects[0].heroImage.src}
 					alt={projects[0].heroImage.alt}
@@ -34,7 +34,7 @@ const totalLabel = String(projects.length).padStart(2, '0');
 					id="featured-image"
 				/>
 			</button>
-			<span class="cursor-label" id="cursor-label" aria-hidden="true">next</span>
+			<span class="cursor-label" id="cursor-label" aria-hidden="true">view project</span>
 		</div>
 
 		<div class="container featured-controls">
@@ -49,6 +49,7 @@ const totalLabel = String(projects.length).padStart(2, '0');
 					<button
 						type="button"
 						class="filmstrip-thumb"
+						data-slug={project.slug}
 						role="tab"
 						aria-selected={i === 0 ? 'true' : 'false'}
 						aria-label={project.title}
@@ -84,6 +85,7 @@ const totalLabel = String(projects.length).padStart(2, '0');
 
 			image!.src = thumbImg.src;
 			image!.alt = thumb.getAttribute('aria-label') || '';
+			link!.dataset.slug = thumb.dataset.slug;
 			indexLabel!.textContent = String(current + 1).padStart(2, '0');
 
 			thumbs.forEach((t, n) => t.setAttribute('aria-selected', n === current ? 'true' : 'false'));
@@ -110,10 +112,11 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		prevBtn.addEventListener('click', () => goTo(current - 1));
 		nextBtn.addEventListener('click', () => goTo(current + 1));
 
-		// Left half of the image = prev, right half = next, with a small
-		// label that follows the cursor to show which. Hover-only — mouse
-		// devices get this; touch devices keep the explicit prev/next row
-		// (mobile-only in CSS) since there's no hover to reveal the split.
+		// Clicking the image opens that project's page — slide navigation
+		// is fully covered by the filmstrip, arrow keys, and autoplay, so
+		// the image itself doesn't need to double as a prev/next control
+		// (earlier it did, which meant clicking it could never open the
+		// project page — one element can't sensibly do both).
 		// A plain button (not <a href>) on purpose — an anchor here made
 		// the browser's native link-preview status bar pop up over the
 		// filmstrip on hover, which a page can't suppress via CSS since
@@ -123,22 +126,17 @@ const totalLabel = String(projects.length).padStart(2, '0');
 
 		if (hasHover) {
 			link.addEventListener('mousemove', (e) => {
-				const rect = link!.getBoundingClientRect();
-				const isNext = e.clientX - rect.left > rect.width / 2;
-				cursorLabel!.textContent = isNext ? 'next' : 'prev';
 				cursorLabel!.style.left = `${e.clientX}px`;
 				cursorLabel!.style.top = `${e.clientY}px`;
 			});
 
 			link.addEventListener('mouseenter', () => cursorLabel!.classList.add('visible'));
 			link.addEventListener('mouseleave', () => cursorLabel!.classList.remove('visible'));
-
-			link.addEventListener('click', (e) => {
-				const rect = link!.getBoundingClientRect();
-				const isNext = e.clientX - rect.left > rect.width / 2;
-				goTo(current + (isNext ? 1 : -1));
-			});
 		}
+
+		link.addEventListener('click', () => {
+			window.location.href = `/portfolio/${link!.dataset.slug}/`;
+		});
 
 		document.addEventListener('keydown', (e) => {
 			if (e.key === 'ArrowLeft') goTo(current - 1);
@@ -206,12 +204,12 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		border-radius: var(--radius-md);
 	}
 
-	/* Follows the cursor over the image to show which half — left/prev,
-	   right/next — a click will act on. Sits to the left of the cursor
-	   (not centered on it) so the label itself is never hidden under the
-	   pointer. Fixed positioning + JS-set left/top (viewport coordinates
-	   from the mousemove event) rather than relative-to-image, so it
-	   isn't clipped by the image's own bounding box near the edges. */
+	/* Follows the cursor over the image as a "click to view" hint. Sits
+	   to the left of the cursor (not centered on it) so the label itself
+	   is never hidden under the pointer. Fixed positioning + JS-set
+	   left/top (viewport coordinates from the mousemove event) rather
+	   than relative-to-image, so it isn't clipped by the image's own
+	   bounding box near the edges. */
 	.cursor-label {
 		position: fixed;
 		left: 0;
