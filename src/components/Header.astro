@@ -7,22 +7,6 @@ const currentPath = Astro.url.pathname;
 <header class="site-header">
 	<div class="container site-header-inner">
 		<a href="/" class="site-logo">{SITE_TITLE}</a>
-		<nav class="desktop-nav" aria-label="Primary">
-			<ul>
-				{NAV_LINKS.filter((link) => link.label !== 'Contact').map((link) => (
-					<li>
-						<a
-							href={link.href}
-							class="desktop-nav-item"
-							aria-current={currentPath === link.href ? 'page' : undefined}
-						>
-							{link.label}
-						</a>
-					</li>
-				))}
-			</ul>
-		</nav>
-		<a href="/contact/" class="btn btn-primary cta-connect">let&rsquo;s connect</a>
 		<button
 			id="menu-toggle"
 			class="menu-toggle"
@@ -125,7 +109,7 @@ const currentPath = Astro.url.pathname;
 	.site-logo {
 		font-family: var(--font-heading);
 		font-weight: var(--weight-normal);
-		font-size: var(--text-h3);
+		font-size: var(--text-h5);
 		letter-spacing: -0.01em;
 		text-transform: lowercase;
 		color: var(--color-text);
@@ -133,63 +117,10 @@ const currentPath = Astro.url.pathname;
 		margin-right: auto;
 	}
 
-	/* Desktop nav + CTA — a plain text nav plus one filled pill button,
-	   visible at wider widths where there's room; the hamburger + full
-	   screen overlay below takes over once space is tight. */
-	.desktop-nav ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		gap: var(--space-xl);
-	}
-
-	.desktop-nav-item {
-		font-size: var(--text-body);
-		font-weight: var(--weight-normal);
-		text-transform: lowercase;
-		color: var(--color-text);
-		text-decoration: none;
-	}
-
-	.desktop-nav-item:hover {
-		color: var(--color-text-secondary);
-	}
-
-	.desktop-nav-item[aria-current='page'] {
-		font-weight: var(--weight-medium);
-	}
-
-	.cta-connect {
-		text-transform: lowercase;
-	}
-
-	.desktop-nav,
-	.cta-connect {
-		display: none;
-	}
-
-	.menu-toggle {
-		display: block;
-	}
-
-	@media (min-width: 721px) {
-		.desktop-nav,
-		.cta-connect {
-			display: block;
-		}
-
-		.desktop-nav ul {
-			display: flex;
-		}
-
-		.menu-toggle {
-			display: none;
-		}
-	}
-
 	/* Hamburger toggle: two bars that animate into an X on open, same
-	   elements in both states so there's no icon swap. */
+	   elements in both states so there's no icon swap. Always visible —
+	   every screen size gets the same logo + hamburger header, with the
+	   full nav (including contact) in the overlay menu below. */
 	.menu-toggle {
 		position: relative;
 		width: 38px;

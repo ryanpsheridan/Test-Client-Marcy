@@ -207,15 +207,16 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	}
 
 	/* Follows the cursor over the image to show which half — left/prev,
-	   right/next — a click will act on. Fixed positioning + JS-set
-	   left/top (viewport coordinates from the mousemove event) rather
-	   than relative-to-image, so it isn't clipped by the image's own
-	   bounding box near the edges. */
+	   right/next — a click will act on. Sits to the left of the cursor
+	   (not centered on it) so the label itself is never hidden under the
+	   pointer. Fixed positioning + JS-set left/top (viewport coordinates
+	   from the mousemove event) rather than relative-to-image, so it
+	   isn't clipped by the image's own bounding box near the edges. */
 	.cursor-label {
 		position: fixed;
 		left: 0;
 		top: 0;
-		transform: translate(-50%, -50%);
+		transform: translate(calc(-100% - 14px), -50%);
 		font-size: var(--text-small);
 		font-weight: var(--weight-medium);
 		color: var(--color-text);
@@ -273,9 +274,9 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	/* Filmstrip — flush with the bottom of the viewport (the flex column
 	   layout puts it last, and body.full-height has no page scroll, so it
 	   naturally stays pinned there without needing position:sticky).
-	   flex:1 on each thumb fills the full width evenly with no dead space
-	   on wide screens; the min-width keeps thumbs legible and switches to
-	   horizontal scroll instead of shrinking further on narrow ones. */
+	   Thumbs are a fixed small size and the row is centered rather than
+	   stretched to fill the width — leaves space on either side on wide
+	   screens, but keeps the 4:3 crop honest instead of distorting width. */
 	/* A little breathing room below the strip instead of sitting flush on
 	   the very last pixel — on mobile, browser chrome (address bar/home
 	   indicator) can otherwise sit right on top of it. env() adds the
@@ -288,7 +289,8 @@ const totalLabel = String(projects.length).padStart(2, '0');
 
 	.featured-filmstrip {
 		display: flex;
-		gap: 2px;
+		justify-content: center;
+		gap: 3px;
 		overflow-x: auto;
 		scrollbar-width: none;
 	}
@@ -297,12 +299,9 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		display: none;
 	}
 
-	/* aspect-ratio (not a fixed height) so a 4:3 shape holds regardless of
-	   how wide flex-grow ends up making each thumb — width is still
-	   whatever divides the full row evenly, height just follows from it. */
 	.filmstrip-thumb {
-		flex: 1 1 0;
-		min-width: 64px;
+		flex: 0 0 auto;
+		width: 64px;
 		aspect-ratio: 4 / 3;
 		padding: 0;
 		border: 0;
