@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const focusAreas = ['brand development', 'advertising', 'consumer products', 'packaging', 'creative strategy'];
+---
+
+<BaseLayout
+	title="About"
+	description="About Marcy Cona — two decades of creative direction, brand development, and advertising work for Wella, Clairol, Coty, and Procter & Gamble."
+>
+	<section class="container section">
+		<p class="eyebrow">about</p>
+		<h1>marcy cona</h1>
+		<p class="bio lead">
+			A creative director with two decades of experience shaping brand, advertising, and
+			product work in beauty and consumer goods &mdash; most recently as Global Creative
+			Director at Wella Company, with earlier leadership roles at Coty and Procter &amp;
+			Gamble.
+		</p>
+		<p class="bio">
+			Across that career, the throughline has been the same: brand development, advertising,
+			and consumer products, with deep expertise as a hair care specialist shaping campaigns
+			and narratives that balance innovation with accessibility &mdash; driving creative
+			direction that meets people where they actually are, not just where a brief says they
+			should be.
+		</p>
+		<p class="bio">
+			Passionate about merging science, strategy, and imagination, the work throughout has
+			aimed to build brands that redefine beauty and inspire creative commerce. This site is a
+			look back at a selection of that work.
+		</p>
+
+		<ul class="chip-row">
+			{focusAreas.map((area) => (
+				<li class="chip">{area}</li>
+			))}
+		</ul>
+
+		<div class="about-actions">
+			<a href="/portfolio/" class="btn btn-primary">view the work</a>
+			<a href="/contact/" class="btn btn-secondary">get in touch</a>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.section {
+		padding-block: var(--space-2xl) var(--space-3xl);
+		max-width: 760px;
+	}
+
+	.eyebrow {
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		font-size: var(--text-small);
+		font-weight: var(--weight-medium);
+		color: var(--color-text-secondary);
+		margin: 0 0 var(--space-sm);
+	}
+
+	.bio {
+		max-width: 640px;
+	}
+
+	.lead {
+		font-size: var(--text-large);
+		color: var(--color-text);
+	}
+
+	.chip-row {
+		list-style: none;
+		margin: var(--space-xl) 0 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-sm);
+	}
+
+	.chip {
+		font-size: var(--text-small);
+		color: var(--color-text-secondary);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		padding: var(--space-xs) var(--space-md);
+		text-transform: lowercase;
+	}
+
+	.about-actions {
+		display: flex;
+		gap: var(--space-md);
+		flex-wrap: wrap;
+		margin-top: var(--space-xl);
+	}
+</style>

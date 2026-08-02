@@ -1,19 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { projects } from '../data/projects';
 
-// Real images live in public/images/gallery/ — see CLAUDE.md's "Gallery /
-// Photo Uploads" section for the naming convention. Every photo opens in a
-// shared lightbox dialog on click. Masonry layout (not a uniform grid) to
-// match the varied crops/orientations of real campaign photography.
-const images = [
-	{ src: '/images/gallery/wella-campaign-double-exposure.jpg', alt: 'Wella campaign creative combining bold color art with a model portrait' },
-	{ src: '/images/gallery/wella-pink-hair-campaign.jpg', alt: 'Wella hair color campaign portrait featuring soft pink-toned hair' },
-	{ src: '/images/gallery/wella-color-perfect-campaign.jpg', alt: 'Wella Color Perfect campaign photograph' },
-	{ src: '/images/gallery/clairol-colorstrong-packaging.jpg', alt: 'Clairol ColorStrong packaging design' },
-	{ src: '/images/gallery/wella-koleston-packaging.jpg', alt: 'Wella Koleston Brilho Infinito packaging lineup' },
-	{ src: '/images/gallery/clairol-campaign-video-still.jpg', alt: 'Still from a Clairol brand campaign video' },
-	{ src: '/images/gallery/clairol-allure-award.jpg', alt: "Allure Editors' Choice Award graphic for a Clairol root-touch-up product" },
-];
+// Every tile links through to its own case-study page at
+// /portfolio/{slug}/ (src/pages/portfolio/[slug].astro) — add a project to
+// src/data/projects.ts and it appears here automatically. Masonry layout
+// (not a uniform grid) to match the varied crops/orientations of real
+// campaign photography; see src/scripts/masonry.ts for how the gapless
+// column packing works.
 ---
 
 <BaseLayout title="Portfolio" description="Selected creative direction and brand work from Marcy Cona, including campaigns for Wella and Clairol.">
@@ -27,18 +21,17 @@ const images = [
 
 	<section class="container section">
 		<div class="masonry" id="portfolio-masonry">
-			{images.map((image) => (
-				<button type="button" class="gallery-trigger masonry-item" data-src={image.src} data-alt={image.alt}>
-					<img src={image.src} alt={image.alt} loading="lazy" />
-				</button>
+			{projects.map((project) => (
+				<a href={`/portfolio/${project.slug}/`} class="masonry-item">
+					<img src={project.heroImage.src} alt={project.heroImage.alt} loading="lazy" />
+					<span class="masonry-caption">
+						<span class="masonry-caption-title">{project.title}</span>
+						<span class="masonry-caption-meta">{project.client} &middot; {project.industry}</span>
+					</span>
+				</a>
 			))}
 		</div>
 	</section>
-
-	<dialog id="lightbox" class="lightbox" aria-label="Photo preview">
-		<button type="button" id="lightbox-close" class="lightbox-close" aria-label="Close">&times;</button>
-		<img id="lightbox-img" src="" alt="" />
-	</dialog>
 </BaseLayout>
 
 <script>
@@ -46,45 +39,6 @@ const images = [
 
 	const masonryEl = document.getElementById('portfolio-masonry');
 	if (masonryEl) initMasonry(masonryEl);
-
-	const dialog = document.getElementById('lightbox') as HTMLDialogElement;
-	const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
-
-	let lastTrigger: HTMLElement | null = null;
-
-	function openLightbox(trigger: HTMLElement) {
-		const img = trigger.querySelector('img');
-		const src = trigger.dataset.src || img?.src || '';
-		const alt = trigger.dataset.alt || img?.alt || '';
-		if (!src) return;
-		lastTrigger = trigger;
-		lightboxImg.src = src;
-		lightboxImg.alt = alt;
-		dialog.showModal();
-	}
-
-	dialog.addEventListener('close', () => {
-		lastTrigger?.focus();
-	});
-
-	document.addEventListener('click', (e) => {
-		const target = e.target as HTMLElement;
-
-		if (target.closest('#lightbox-close')) {
-			dialog.close();
-			return;
-		}
-
-		if (target === dialog) {
-			dialog.close();
-			return;
-		}
-
-		const trigger = target.closest<HTMLElement>('.gallery-trigger');
-		if (trigger) {
-			openLightbox(trigger);
-		}
-	});
 </script>
 
 <style>
@@ -96,18 +50,6 @@ const images = [
 		font-size: var(--text-large);
 		color: var(--color-text-secondary);
 		max-width: 640px;
-	}
-
-	/* Plain button reset so every clickable photo stays keyboard-focusable
-	   and announced correctly, with none of the default button chrome. */
-	.gallery-trigger {
-		display: block;
-		width: 100%;
-		padding: 0;
-		border: 0;
-		background: none;
-		cursor: pointer;
-		-webkit-tap-highlight-color: transparent;
 	}
 
 	/* Base state is CSS multi-column — a reasonable immediate render for
@@ -136,6 +78,7 @@ const images = [
 	}
 
 	.masonry-item {
+		position: relative;
 		display: block;
 		width: 100%;
 		border-radius: var(--radius-md);
@@ -152,11 +95,44 @@ const images = [
 		height: auto;
 		display: block;
 		background: var(--color-bg-subtle);
-		transition: transform 0.15s ease;
+		transition: transform 0.2s ease;
 	}
 
 	.masonry-item:hover img {
-		transform: scale(1.02);
+		transform: scale(1.03);
+	}
+
+	/* Caption overlay — hidden until hover/focus, signals that every tile
+	   is a link through to its own case-study page. */
+	.masonry-caption {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		gap: 2px;
+		padding: var(--space-md);
+		background: linear-gradient(to top, rgba(20, 20, 20, 0.72), rgba(20, 20, 20, 0) 55%);
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+
+	.masonry-item:hover .masonry-caption,
+	.masonry-item:focus-visible .masonry-caption {
+		opacity: 1;
+	}
+
+	.masonry-caption-title {
+		font-size: var(--text-body);
+		font-weight: var(--weight-medium);
+		color: #fff;
+		text-transform: lowercase;
+	}
+
+	.masonry-caption-meta {
+		font-size: var(--text-small);
+		color: rgba(255, 255, 255, 0.8);
+		text-transform: lowercase;
 	}
 
 	@media (max-width: 720px) {
@@ -169,74 +145,5 @@ const images = [
 		.masonry:not(.masonry-js) {
 			column-count: 1;
 		}
-	}
-
-	/* Lightbox — visual/positioning rules only apply while [open], so a
-	   closed <dialog> keeps the UA default display:none instead of
-	   sitting invisibly on top of the page and eating clicks. */
-	.lightbox {
-		margin: 0;
-		padding: var(--space-xl);
-		border: none;
-		background: transparent;
-	}
-
-	@media (max-width: 640px) {
-		.lightbox {
-			padding: var(--space-md);
-		}
-	}
-
-	.lightbox[open] {
-		position: fixed;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		max-width: none;
-		max-height: none;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.lightbox::backdrop {
-		background: rgba(20, 20, 20, 0.9);
-	}
-
-	.lightbox img {
-		max-width: 100%;
-		max-height: 100%;
-		object-fit: contain;
-		border-radius: var(--radius-md);
-	}
-
-	.lightbox-close {
-		position: absolute;
-		top: var(--space-lg);
-		right: var(--space-lg);
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 50%;
-		border: none;
-		background: rgba(255, 255, 255, 0.92);
-		color: var(--color-text);
-		font-size: 1.5rem;
-		line-height: 1;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		-webkit-tap-highlight-color: transparent;
-	}
-
-	@media (max-width: 640px) {
-		.lightbox-close {
-			top: var(--space-sm);
-			right: var(--space-sm);
-		}
-	}
-
-	.lightbox-close:hover {
-		background: var(--color-bg);
 	}
 </style>
