@@ -36,15 +36,6 @@ const totalLabel = String(projects.length).padStart(2, '0');
 			</a>
 		</div>
 
-		<div class="container featured-caption">
-			<p class="featured-title" id="featured-title">{projects[0].title}</p>
-			<p class="featured-client">
-				<span id="featured-client">{projects[0].client} &middot; {projects[0].industry}</span>
-				&nbsp;&mdash;&nbsp;
-				<a href="/portfolio/" class="featured-all-link">view all work</a>
-			</p>
-		</div>
-
 		<div class="container featured-controls">
 			<button type="button" class="featured-control" id="featured-prev">prev</button>
 			<p class="featured-count"><span id="featured-index">01</span> / {totalLabel}</p>
@@ -59,9 +50,6 @@ const totalLabel = String(projects.length).padStart(2, '0');
 						class="filmstrip-thumb"
 						data-index={i}
 						data-slug={project.slug}
-						data-title={project.title}
-						data-client={project.client}
-						data-industry={project.industry}
 						role="tab"
 						aria-selected={i === 0 ? 'true' : 'false'}
 						aria-label={project.title}
@@ -79,13 +67,11 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	const link = document.getElementById('featured-link') as HTMLAnchorElement | null;
 	const image = document.getElementById('featured-image') as HTMLImageElement | null;
 	const indexLabel = document.getElementById('featured-index');
-	const titleLabel = document.getElementById('featured-title');
-	const clientLabel = document.getElementById('featured-client');
 	const prevBtn = document.getElementById('featured-prev');
 	const nextBtn = document.getElementById('featured-next');
 	const filmstrip = document.getElementById('featured-filmstrip');
 
-	if (section && link && image && indexLabel && titleLabel && clientLabel && prevBtn && nextBtn && filmstrip) {
+	if (section && link && image && indexLabel && prevBtn && nextBtn && filmstrip) {
 		const thumbs = Array.from(filmstrip.children) as HTMLButtonElement[];
 		let current = 0;
 		let timer: ReturnType<typeof setInterval> | null = null;
@@ -94,14 +80,12 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		function show(i: number) {
 			current = (i + thumbs.length) % thumbs.length;
 			const thumb = thumbs[current];
-			const { slug, title, client, industry } = thumb.dataset;
+			const { slug } = thumb.dataset;
 			const thumbImg = thumb.querySelector('img') as HTMLImageElement;
 
 			image!.src = thumbImg.src;
 			image!.alt = thumb.getAttribute('aria-label') || '';
 			link!.href = `/portfolio/${slug}/`;
-			titleLabel!.textContent = title || '';
-			clientLabel!.textContent = `${client} · ${industry}`;
 			indexLabel!.textContent = String(current + 1).padStart(2, '0');
 
 			thumbs.forEach((t, n) => t.setAttribute('aria-selected', n === current ? 'true' : 'false'));
@@ -171,7 +155,7 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		flex: 1;
 		min-height: 0;
 		display: flex;
-		padding: var(--space-md) var(--space-lg);
+		padding: calc(var(--space-md) + 32px) var(--space-lg);
 	}
 
 	.featured-image-link {
@@ -188,31 +172,6 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		height: 100%;
 		object-fit: contain;
 		border-radius: var(--radius-md);
-	}
-
-	.featured-caption {
-		flex-shrink: 0;
-		text-align: center;
-		padding-block: 0 var(--space-xs);
-	}
-
-	.featured-title {
-		font-size: var(--text-body);
-		font-weight: var(--weight-medium);
-		color: var(--color-text);
-		text-transform: lowercase;
-		margin: 0;
-	}
-
-	.featured-client {
-		font-size: var(--text-small);
-		color: var(--color-text-secondary);
-		text-transform: lowercase;
-		margin: 2px 0 0;
-	}
-
-	.featured-all-link {
-		color: var(--color-text-secondary);
 	}
 
 	.featured-controls {
@@ -252,9 +211,14 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	   flex:1 on each thumb fills the full width evenly with no dead space
 	   on wide screens; the min-width keeps thumbs legible and switches to
 	   horizontal scroll instead of shrinking further on narrow ones. */
+	/* A little breathing room below the strip instead of sitting flush on
+	   the very last pixel — on mobile, browser chrome (address bar/home
+	   indicator) can otherwise sit right on top of it. env() adds the
+	   safe-area on notched/gesture-nav devices on top of that. */
 	.featured-filmstrip-wrap {
 		flex-shrink: 0;
 		border-top: 1px solid var(--color-border);
+		padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
 	}
 
 	.featured-filmstrip {
