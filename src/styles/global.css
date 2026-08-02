@@ -36,7 +36,8 @@ body {
 h1, h2, h3, h4, h5 {
 	font-family: var(--font-heading);
 	line-height: var(--line-height-tight);
-	font-weight: var(--weight-semibold);
+	font-weight: var(--weight-light);
+	text-transform: lowercase;
 	margin: 0 0 var(--space-md);
 }
 
@@ -55,8 +56,13 @@ p {
 	color: var(--color-text-secondary);
 }
 
+/* Underlined by default (not just a color shift) — with the site fully
+   monochromatic, color alone is too subtle a signal to mark a link inside
+   running body copy. */
 a {
 	color: var(--color-accent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.15em;
 }
 
 a:hover {

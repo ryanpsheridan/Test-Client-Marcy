@@ -1,15 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactForm from '../components/ContactForm.astro';
-import { SITE_EMAIL, SITE_PHONE } from '../consts';
+import { SITE_EMAIL } from '../consts';
 ---
 
-<BaseLayout title="Contact" description="Get in touch.">
+<BaseLayout
+	title="Contact"
+	description="Get in touch with Marcy Cona about creative direction, brand strategy, or new opportunities."
+>
 	<section class="container section">
-		<h1>Contact</h1>
+		<h1>contact</h1>
+		<p class="lead">
+			Open to conversations about creative direction, brand strategy, and new opportunities.
+		</p>
 		<p>
-			<a href={`tel:${SITE_PHONE.replace(/[^\d+]/g, '')}`}>{SITE_PHONE}</a>
-			&nbsp;&middot;&nbsp;
 			<a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
 		</p>
 
@@ -23,6 +27,10 @@ import { SITE_EMAIL, SITE_PHONE } from '../consts';
 	.section {
 		padding-block: var(--space-2xl);
 		max-width: 560px;
+	}
+
+	.lead {
+		font-size: var(--text-large);
 	}
 
 	.form-wrap {

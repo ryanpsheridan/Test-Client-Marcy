@@ -3,18 +3,19 @@
 // client project — everything else (BaseHead, Header, Footer, schema)
 // reads from here.
 
-export const SITE_TITLE = 'Client Name';
-export const SITE_DESCRIPTION = 'One sentence describing what this business does and for whom.';
+export const SITE_TITLE = 'Marcy Cona';
+export const SITE_DESCRIPTION = 'Portfolio of Marcy Cona — two decades of creative direction, brand, and advertising work in beauty and consumer products.';
 
-export const SITE_PHONE = '(555) 555-5555';
-export const SITE_EMAIL = 'hello@example.com';
-export const SITE_ADDRESS = ''; // optional — leave blank if the client has no public storefront address
+export const SITE_PHONE = ''; // no public phone number for this portfolio site
+export const SITE_EMAIL = 'sheridesignn@gmail.com';
+export const SITE_ADDRESS = ''; // no public address — portfolio site, not a storefront
 
+// Header shows Home/Portfolio/About inline plus a separate "let's connect"
+// CTA button (see Header.astro) rather than listing Contact a second time;
+// NAV_LINKS itself stays the full set for the mobile menu and footer.
 export const NAV_LINKS = [
 	{ label: 'Home', href: '/' },
+	{ label: 'Portfolio', href: '/portfolio/' },
 	{ label: 'About', href: '/about/' },
-	{ label: 'Services', href: '/services/' },
-	{ label: 'Gallery', href: '/gallery/' },
 	{ label: 'Contact', href: '/contact/' },
-	{ label: 'Style Guide', href: '/style-guide/' },
 ];

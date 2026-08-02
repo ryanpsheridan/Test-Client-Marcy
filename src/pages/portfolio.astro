@@ -1,0 +1,149 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { projects } from '../data/projects';
+
+// Every tile links through to its own case-study page at
+// /portfolio/{slug}/ (src/pages/portfolio/[slug].astro) — add a project to
+// src/data/projects.ts and it appears here automatically. Masonry layout
+// (not a uniform grid) to match the varied crops/orientations of real
+// campaign photography; see src/scripts/masonry.ts for how the gapless
+// column packing works.
+---
+
+<BaseLayout title="Portfolio" description="Selected creative direction and brand work from Marcy Cona, including campaigns for Wella and Clairol.">
+	<section class="container section">
+		<h1>portfolio</h1>
+		<p class="lead">
+			Selected campaigns, brand direction, and packaging work from two decades in beauty and
+			consumer products, including work for Wella and Clairol.
+		</p>
+	</section>
+
+	<section class="container section">
+		<div class="masonry" id="portfolio-masonry">
+			{projects.map((project) => (
+				<a href={`/portfolio/${project.slug}/`} class="masonry-item">
+					<img src={project.heroImage.src} alt={project.heroImage.alt} loading="lazy" />
+					<span class="masonry-caption">
+						<span class="masonry-caption-title">{project.title}</span>
+						<span class="masonry-caption-meta">{project.client} &middot; {project.industry}</span>
+					</span>
+				</a>
+			))}
+		</div>
+	</section>
+</BaseLayout>
+
+<script>
+	import { initMasonry } from '../scripts/masonry';
+
+	const masonryEl = document.getElementById('portfolio-masonry');
+	if (masonryEl) initMasonry(masonryEl);
+</script>
+
+<style>
+	.section {
+		padding-block: var(--space-2xl);
+	}
+
+	.lead {
+		font-size: var(--text-large);
+		color: var(--color-text-secondary);
+		max-width: 640px;
+	}
+
+	/* Base state is CSS multi-column — a reasonable immediate render for
+	   no-JS visitors and before initMasonry() runs. Once JS measures real
+	   image heights it re-parents items into .masonry-col flex columns
+	   (shortest-column-first), which never leaves the gap that
+	   column-count + break-inside:avoid can produce when a tall item gets
+	   pushed to the next column early. */
+	.masonry {
+		column-count: 3;
+		column-gap: var(--space-md);
+	}
+
+	.masonry.masonry-js {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-md);
+	}
+
+	.masonry :global(.masonry-col) {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	.masonry-item {
+		position: relative;
+		display: block;
+		width: 100%;
+		border-radius: var(--radius-md);
+		overflow: hidden;
+	}
+
+	.masonry:not(.masonry-js) .masonry-item {
+		margin-bottom: var(--space-md);
+		break-inside: avoid;
+	}
+
+	.masonry-item img {
+		width: 100%;
+		height: auto;
+		display: block;
+		background: var(--color-bg-subtle);
+		transition: transform 0.2s ease;
+	}
+
+	.masonry-item:hover img {
+		transform: scale(1.03);
+	}
+
+	/* Caption overlay — hidden until hover/focus, signals that every tile
+	   is a link through to its own case-study page. */
+	.masonry-caption {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		gap: 2px;
+		padding: var(--space-md);
+		background: linear-gradient(to top, rgba(20, 20, 20, 0.72), rgba(20, 20, 20, 0) 55%);
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+
+	.masonry-item:hover .masonry-caption,
+	.masonry-item:focus-visible .masonry-caption {
+		opacity: 1;
+	}
+
+	.masonry-caption-title {
+		font-size: var(--text-body);
+		font-weight: var(--weight-medium);
+		color: #fff;
+		text-transform: lowercase;
+	}
+
+	.masonry-caption-meta {
+		font-size: var(--text-small);
+		color: rgba(255, 255, 255, 0.8);
+		text-transform: lowercase;
+	}
+
+	@media (max-width: 720px) {
+		.masonry:not(.masonry-js) {
+			column-count: 2;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.masonry:not(.masonry-js) {
+			column-count: 1;
+		}
+	}
+</style>

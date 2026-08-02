@@ -1,21 +1,177 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const focusAreas = ['brand development', 'advertising', 'consumer products', 'packaging', 'creative strategy'];
+
+const career = [
+	{ org: 'Wella Company', role: 'Global Creative Director', year: '2020–2024' },
+	{ org: 'Coty', role: 'Global Creative Director', year: '2016–2020' },
+	{ org: 'Procter & Gamble', role: 'Global Creative Director', year: '2003–2016' },
+];
 ---
 
-<BaseLayout title="About" description="Who we are and what we're about.">
-	<section class="container section">
-		<h1>About</h1>
-		<p>
-			Replace with the client's real story — who they are, how long they've been
-			doing this, and why a visitor should trust them. This page should read
-			like a person wrote it, not a template.
-		</p>
+<BaseLayout
+	title="About"
+	description="About Marcy Cona — two decades of creative direction, brand development, and advertising work for Wella, Clairol, Coty, and Procter & Gamble."
+>
+	<section class="container section about-grid">
+		<div class="about-copy">
+			<p class="eyebrow">about</p>
+			<h1>marcy cona</h1>
+			<p class="bio lead">
+				A creative director with two decades of experience shaping brand, advertising, and
+				product work in beauty and consumer goods &mdash; Global Creative Director at Wella
+				Company from 2020 to 2024, and at Coty from 2016 to 2020, following thirteen years in
+				the same role at Procter &amp; Gamble.
+			</p>
+			<p class="bio">
+				Across that career, the throughline has been the same: brand development, advertising,
+				and consumer products, with deep expertise as a hair care specialist shaping campaigns
+				and narratives that balance innovation with accessibility &mdash; driving creative
+				direction that meets people where they actually are, not just where a brief says they
+				should be.
+			</p>
+			<p class="bio">
+				Passionate about merging science, strategy, and imagination, the work throughout has
+				aimed to build brands that redefine beauty and inspire creative commerce. This site is a
+				look back at a selection of that work.
+			</p>
+
+			<ul class="chip-row">
+				{focusAreas.map((area) => (
+					<li class="chip">{area}</li>
+				))}
+			</ul>
+
+			<div class="about-actions">
+				<a href="/portfolio/" class="btn btn-primary">view the work</a>
+				<a href="/contact/" class="btn btn-secondary">get in touch</a>
+			</div>
+		</div>
+
+		<aside class="about-side">
+			<img
+				src="/images/gallery/behind-the-scenes.jpg"
+				alt="Marcy Cona on set with the production team, reviewing hair styling and color during a shoot"
+				class="about-photo"
+			/>
+			<ul class="about-timeline">
+				{career.map((item) => (
+					<li>
+						<span class="about-timeline-year">{item.year}</span>
+						<span class="about-timeline-org">{item.org}</span>
+					</li>
+				))}
+			</ul>
+		</aside>
 	</section>
 </BaseLayout>
 
 <style>
 	.section {
-		padding-block: var(--space-2xl);
-		max-width: 720px;
+		padding-block: var(--space-2xl) var(--space-3xl);
+	}
+
+	.about-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 320px;
+		gap: var(--space-3xl);
+		align-items: start;
+	}
+
+	.about-copy {
+		max-width: 640px;
+	}
+
+	.eyebrow {
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		font-size: var(--text-small);
+		font-weight: var(--weight-medium);
+		color: var(--color-text-secondary);
+		margin: 0 0 var(--space-sm);
+	}
+
+	.bio {
+		max-width: 640px;
+	}
+
+	.lead {
+		font-size: var(--text-large);
+		color: var(--color-text);
+	}
+
+	.chip-row {
+		list-style: none;
+		margin: var(--space-xl) 0 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-sm);
+	}
+
+	.chip {
+		font-size: var(--text-small);
+		color: var(--color-text-secondary);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		padding: var(--space-xs) var(--space-md);
+		text-transform: lowercase;
+	}
+
+	.about-actions {
+		display: flex;
+		gap: var(--space-md);
+		flex-wrap: wrap;
+		margin-top: var(--space-xl);
+	}
+
+	.about-side {
+		position: sticky;
+		top: var(--space-xl);
+	}
+
+	.about-photo {
+		width: 100%;
+		border-radius: var(--radius-lg);
+		margin-bottom: var(--space-lg);
+	}
+
+	.about-timeline {
+		list-style: none;
+		margin: 0;
+		padding: var(--space-lg) 0 0;
+		border-top: 1px solid var(--color-border);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
+
+	.about-timeline li {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--space-md);
+		font-size: var(--text-small);
+	}
+
+	.about-timeline-year {
+		color: var(--color-text-secondary);
+	}
+
+	.about-timeline-org {
+		color: var(--color-text);
+		font-weight: var(--weight-medium);
+		text-transform: lowercase;
+	}
+
+	@media (max-width: 860px) {
+		.about-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.about-side {
+			position: static;
+			max-width: 400px;
+		}
 	}
 </style>

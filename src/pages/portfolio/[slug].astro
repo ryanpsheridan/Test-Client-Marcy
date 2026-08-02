@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { projects } from '../../data/projects';
+
+export function getStaticPaths() {
+	return projects.map((project, index) => ({
+		params: { slug: project.slug },
+		props: {
+			project,
+			prev: projects[index - 1] ?? projects[projects.length - 1],
+			next: projects[index + 1] ?? projects[0],
+		},
+	}));
+}
+
+const { project, prev, next } = Astro.props;
+---
+
+<BaseLayout
+	title={project.title}
+	description={`${project.title} — a ${project.industry} project for ${project.client}, from Marcy Cona's portfolio.`}
+>
+	<section class="container section meta-section">
+		<a href="/portfolio/" class="back-link">&larr; back to portfolio</a>
+		<div class="meta-row">
+			<div>
+				<p class="meta-label">Industry</p>
+				<p class="meta-value">{project.industry}</p>
+			</div>
+			<div>
+				<p class="meta-label">Client</p>
+				<p class="meta-value">{project.client}</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="container hero-image-section">
+		<img src={project.heroImage.src} alt={project.heroImage.alt} class="hero-image" />
+	</section>
+
+	{project.supportingImages && project.supportingImages.length > 0 && (
+		<section class="container section supporting-section">
+			<div class="supporting-grid">
+				{project.supportingImages.map((image) => (
+					<img src={image.src} alt={image.alt} class="supporting-image" loading="lazy" />
+				))}
+			</div>
+		</section>
+	)}
+
+	<nav class="container section project-nav" aria-label="More projects">
+		<a href={`/portfolio/${prev.slug}/`} class="project-nav-link">
+			<span class="project-nav-label">&larr; previous</span>
+			<span class="project-nav-title">{prev.title}</span>
+		</a>
+		<a href={`/portfolio/${next.slug}/`} class="project-nav-link project-nav-link-next">
+			<span class="project-nav-label">next &rarr;</span>
+			<span class="project-nav-title">{next.title}</span>
+		</a>
+	</nav>
+</BaseLayout>
+
+<style>
+	.meta-section {
+		padding-block: var(--space-2xl) var(--space-lg);
+	}
+
+	.back-link {
+		display: inline-block;
+		font-size: var(--text-small);
+		color: var(--color-text-secondary);
+		text-decoration: none;
+		margin-bottom: var(--space-xl);
+	}
+
+	.back-link:hover {
+		color: var(--color-text);
+	}
+
+	.meta-row {
+		display: flex;
+		gap: var(--space-2xl);
+		flex-wrap: wrap;
+	}
+
+	.meta-label {
+		font-size: var(--text-small);
+		color: var(--color-text-secondary);
+		margin-bottom: var(--space-xs);
+	}
+
+	.meta-value {
+		font-size: var(--text-large);
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+		text-transform: lowercase;
+		margin-bottom: 0;
+	}
+
+	.hero-image-section {
+		padding-block: var(--space-lg) var(--space-2xl);
+	}
+
+	/* object-fit: contain (not cover) — a hero cropped to a fixed height
+	   would slice off the bottom of tall/square packaging shots (product
+	   name, shade name), which matters for this content. Letterboxing on
+	   a subtle background reads better than losing part of the shot. */
+	.hero-image {
+		width: 100%;
+		max-height: 760px;
+		object-fit: contain;
+		background: var(--color-bg-subtle);
+		border-radius: var(--radius-lg);
+	}
+
+	.supporting-section {
+		padding-block: 0 var(--space-2xl);
+	}
+
+	.supporting-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: var(--space-md);
+	}
+
+	.supporting-image {
+		width: 100%;
+		height: auto;
+		border-radius: var(--radius-md);
+	}
+
+	.project-nav {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--space-lg);
+		border-top: 1px solid var(--color-border);
+		padding-block: var(--space-xl) var(--space-3xl);
+	}
+
+	.project-nav-link {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+		text-decoration: none;
+		max-width: 45%;
+	}
+
+	.project-nav-link-next {
+		text-align: right;
+		align-items: flex-end;
+	}
+
+	.project-nav-label {
+		font-size: var(--text-small);
+		color: var(--color-text-secondary);
+	}
+
+	.project-nav-title {
+		font-size: var(--text-large);
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+		text-transform: lowercase;
+	}
+
+	.project-nav-link:hover .project-nav-title {
+		color: var(--color-text-secondary);
+	}
+</style>

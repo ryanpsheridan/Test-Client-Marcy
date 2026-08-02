@@ -1,191 +1,265 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactForm from '../components/ContactForm.astro';
-import { SITE_TITLE, SITE_DESCRIPTION, SITE_PHONE, SITE_EMAIL, SITE_ADDRESS } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_EMAIL } from '../consts';
+import { projects } from '../data/projects';
 
-// Placeholder content throughout — replace every field before launch.
-// Section order follows the standard small-business homepage pattern:
-// hero → trust signals → services preview → why-us → work preview →
-// testimonials → contact. Services/gallery previews intentionally reuse
-// a few real items from those pages rather than inventing new copy, so
-// there's one source of truth to edit.
 const schema = {
 	'@context': 'https://schema.org',
-	'@type': 'LocalBusiness', // TODO: swap for the more specific type if one fits (Restaurant, Plumber, ProfessionalService, etc.)
+	'@type': 'Person',
 	name: SITE_TITLE,
 	description: SITE_DESCRIPTION,
 	url: Astro.site,
+	email: SITE_EMAIL,
 };
 
-const trustSignals = [
-	'Replace with a trust signal (e.g. "Licensed & insured")',
-	'Replace with a trust signal (e.g. "5-star rated")',
-	'Replace with a trust signal (e.g. "Serving [area] since 20XX")',
-];
-
-const services = [
+// Chronological, earliest to latest — this is a retrospective ("here's
+// what I've made"), not a resume, so it reads as a career arc rather than
+// leading with a current title. Dates from her LinkedIn profile.
+const career = [
 	{
-		title: 'Service one',
-		description: 'Replace with a real description of what this includes.',
+		org: 'Procter & Gamble',
+		role: 'Global Creative Director',
+		year: '2003–2016',
+		description: 'Thirteen years leading global creative direction, brand development, and creative strategy.',
 	},
 	{
-		title: 'Service two',
-		description: 'Replace with a real description of what this includes.',
+		org: 'Coty',
+		role: 'Global Creative Director',
+		year: '2016–2020',
+		description: 'Continued leading global creative direction and brand development for major beauty brands.',
 	},
 	{
-		title: 'Service three',
-		description: 'Replace with a real description of what this includes.',
+		org: 'Wella Company',
+		role: 'Global Creative Director',
+		year: '2020–2024',
+		description: 'Shaping brand development, advertising, and consumer product strategy across the portfolio, drawing on deep expertise as a hair care specialist.',
 	},
-];
-
-const benefits = [
-	{ title: 'Fast, reliable service', description: 'Replace with what makes response time or turnaround a real advantage.' },
-	{ title: 'Transparent, upfront pricing', description: 'Replace with how you handle quotes — no surprise costs.' },
-	{ title: 'Locally owned and operated', description: 'Replace with real local/community credibility.' },
-	{ title: 'Satisfaction guaranteed', description: 'Replace with the real guarantee or standard you hold work to.' },
-];
-
-const galleryPreview = [
-	{ src: '/images/gallery/placeholder-1.svg', alt: 'Replace with a real, descriptive alt text for this photo' },
-	{ src: '/images/gallery/placeholder-2.svg', alt: 'Replace with a real, descriptive alt text for this photo' },
-	{ src: '/images/gallery/placeholder-3.svg', alt: 'Replace with a real, descriptive alt text for this photo' },
 ];
 
 const testimonials = [
 	{
-		quote: 'Replace with a real quote from a client — specific results read as more credible than generic praise.',
-		name: 'Client name',
-		role: 'Replace with their role or company',
+		quote: 'I’ve had the pleasure to work with Marcy over several years, during our time together at P&G, and then at Wella. I could not recommend Marcy enough as an outstanding expert in all aspects of Beauty Production — and in particular for Hair.',
+		name: 'Javier Sandoval',
 	},
 	{
-		quote: 'Replace with a second real quote, ideally from a different type of client to show range.',
-		name: 'Client name',
-		role: 'Replace with their role or company',
+		quote: 'I have worked with Marcy in the last 4 years in Wella. She has always been a great team member and colleague, extremely dedicated, results driven and willing to share her expertise.',
+		name: 'Sara Traversi',
+	},
+	{
+		quote: 'Marcy’s expertise was crucial during the retouching and design phases, where she oversaw every detail related to hair color, texture, and styling. She ensured that all the models’ hair looked perfect for each shot.',
+		name: 'Edward Luttrell',
 	},
 ];
+
+// Hand-picked for visual variety in the preview rather than the first N
+// in file order (which would otherwise skew toward whichever brand has
+// the most project entries).
+const previewSlugs = [
+	'wella-color-perfect-campaign',
+	'clairol-packaging-collection',
+	'wella-campaign-photography',
+	'clairol-color-campaign',
+	'wella-koleston-packaging',
+	'clairol-beach-campaign',
+];
+const workPreview = previewSlugs
+	.map((slug) => projects.find((p) => p.slug === slug))
+	.filter((p): p is (typeof projects)[number] => Boolean(p));
 ---
 
 <BaseLayout title="Home" description={SITE_DESCRIPTION}>
 	<script type="application/ld+json" set:html={JSON.stringify(schema)} />
 
-	<section class="hero container">
-		<h1>Headline that says what you do and for whom</h1>
-		<p class="hero-sub">
-			One or two sentences of supporting copy. Lead with the outcome the visitor
-			cares about, not a list of features.
-		</p>
-		<div class="hero-actions">
-			<a href="/contact/" class="btn btn-primary">Get in touch</a>
-			<a href="/gallery/" class="btn btn-secondary">See our work</a>
+	<section class="hero">
+		<div class="container hero-inner">
+			<div class="hero-content">
+				<p class="eyebrow">creative direction &middot; beauty &amp; consumer products</p>
+				<h1 class="hero-title">marcy cona</h1>
+				<p class="hero-sub">
+					A selection of brand, advertising, and product work from two decades in beauty and
+					consumer goods &mdash; including campaigns for Wella and Clairol.
+				</p>
+				<div class="hero-actions">
+					<a href="/portfolio/" class="btn btn-primary">view work</a>
+					<a href="/about/" class="btn btn-secondary">about marcy</a>
+				</div>
+			</div>
+			<div class="hero-mark" aria-hidden="true">
+				<span>mc</span>
+			</div>
 		</div>
 	</section>
 
-	<section class="container trust-bar" aria-label="Why clients trust us">
-		<ul>
-			{trustSignals.map((signal) => (
-				<li>{signal}</li>
-			))}
-		</ul>
-	</section>
-
-	<section class="container section">
-		<h2>What we do</h2>
+	<section class="container section work-section">
+		<h2>selected work</h2>
 		<p class="section-intro">
-			Short section introducing the core service(s) — answer the question a visitor is
-			actually asking when they land here. See the full <a href="/services/">list of services</a>,
-			including pricing and how the process works.
+			A look at recent campaigns and brand work &mdash; visit the full <a href="/portfolio/">portfolio</a> for more.
 		</p>
-		<ul class="service-grid">
-			{services.map((service) => (
-				<li class="service-card">
-					<h3>{service.title}</h3>
-					<p>{service.description}</p>
-				</li>
+		<div class="masonry" id="work-masonry">
+			{workPreview.map((project) => (
+				<a href={`/portfolio/${project.slug}/`} class="masonry-item">
+					<img src={project.heroImage.src} alt={project.heroImage.alt} loading="lazy" />
+				</a>
 			))}
-		</ul>
-		<a href="/services/" class="btn btn-secondary">View all services</a>
+		</div>
+		<a href="/portfolio/" class="btn btn-secondary view-all">view all work</a>
 	</section>
 
-	<section class="container section bg-subtle">
-		<h2>Why choose us</h2>
-		<ul class="benefit-grid">
-			{benefits.map((benefit) => (
-				<li class="benefit-card">
-					<h3>{benefit.title}</h3>
-					<p>{benefit.description}</p>
-				</li>
-			))}
-		</ul>
+	<section class="band band-subtle">
+		<div class="container section">
+			<h2>career</h2>
+			<p class="section-intro">Two decades shaping brand and creative direction in beauty.</p>
+			<ol class="timeline">
+				{career.map((item, i) => (
+					<li class="timeline-item" style={`--i: ${i}`}>
+						<span class="timeline-dot" aria-hidden="true"></span>
+						<div class="timeline-content">
+							<h3>{item.org}</h3>
+							<p class="timeline-role">{item.role}{item.year && <> &middot; {item.year}</>}</p>
+							<p>{item.description}</p>
+						</div>
+					</li>
+				))}
+			</ol>
+		</div>
 	</section>
 
-	<section class="container section">
-		<h2>Our work</h2>
-		<p class="section-intro">
-			A look at recent projects — visit the <a href="/gallery/">full gallery</a> for more.
-		</p>
-		<ul class="work-grid">
-			{galleryPreview.map((image) => (
-				<li>
-					<a href="/gallery/" class="work-item">
-						<img src={image.src} alt={image.alt} loading="lazy" />
-					</a>
-				</li>
-			))}
-		</ul>
-		<a href="/gallery/" class="btn btn-secondary">View full gallery</a>
-	</section>
-
-	<section class="container section bg-subtle">
-		<h2>What clients say</h2>
-		<ul class="testimonial-grid">
+	<section class="container section testimonial-section">
+		<div class="testimonial-track" id="testimonial-track">
 			{testimonials.map((t) => (
-				<li>
-					<blockquote class="testimonial-card">
-						<p>&ldquo;{t.quote}&rdquo;</p>
-						<footer>
-							<cite>{t.name}</cite>{t.role && <>, {t.role}</>}
-						</footer>
-					</blockquote>
-				</li>
+				<blockquote class="testimonial">
+					<p>&ldquo;{t.quote}&rdquo;</p>
+					<footer>
+						<cite>{t.name}</cite>
+					</footer>
+				</blockquote>
 			))}
-		</ul>
+		</div>
+		{testimonials.length > 1 && (
+			<div class="testimonial-controls">
+				<button type="button" class="testimonial-arrow" id="testimonial-prev" aria-label="Previous quote">&larr;</button>
+				<div class="testimonial-dots" id="testimonial-dots" role="tablist" aria-label="Select quote">
+					{testimonials.map((_, i) => (
+						<button
+							type="button"
+							class="testimonial-dot"
+							role="tab"
+							aria-selected={i === 0 ? 'true' : 'false'}
+							aria-label={`Quote ${i + 1} of ${testimonials.length}`}
+						></button>
+					))}
+				</div>
+				<button type="button" class="testimonial-arrow" id="testimonial-next" aria-label="Next quote">&rarr;</button>
+			</div>
+		)}
 	</section>
 
-	<section class="container section contact-section">
-		<div class="contact-grid">
-			<div class="contact-info">
-				<h2>Get in touch</h2>
-				<p>
-					Replace with a short line inviting the visitor to reach out — restate the outcome
-					one more time before they leave the page.
-				</p>
-				<p class="contact-details">
-					<a href={`tel:${SITE_PHONE.replace(/[^\d+]/g, '')}`}>{SITE_PHONE}</a>
-					<br />
-					<a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
-					{SITE_ADDRESS && (
-						<>
-							<br />
-							{SITE_ADDRESS}
-						</>
-					)}
-				</p>
-			</div>
-			<div class="contact-form-wrap">
-				<ContactForm />
+	<section class="band band-subtle">
+		<div class="container section contact-section">
+			<div class="contact-grid">
+				<div class="contact-info">
+					<h2>get in touch</h2>
+					<p>
+						Open to conversations about creative direction, brand strategy, and new
+						opportunities.
+					</p>
+					<p class="contact-details">
+						<a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
+					</p>
+				</div>
+				<div class="contact-form-wrap">
+					<ContactForm />
+				</div>
 			</div>
 		</div>
 	</section>
 </BaseLayout>
 
+<script>
+	import { initMasonry } from '../scripts/masonry';
+
+	const el = document.getElementById('work-masonry');
+	if (el) initMasonry(el);
+
+	// Testimonial carousel — only wired up when there's more than one
+	// slide (the dots/arrows are omitted from the markup entirely
+	// otherwise, so this is a no-op for a single quote).
+	const track = document.getElementById('testimonial-track') as HTMLDivElement | null;
+	const dotsWrap = document.getElementById('testimonial-dots');
+	const prevBtn = document.getElementById('testimonial-prev');
+	const nextBtn = document.getElementById('testimonial-next');
+
+	if (track && dotsWrap && prevBtn && nextBtn) {
+		const slides = Array.from(track.children) as HTMLElement[];
+		const dots = Array.from(dotsWrap.children) as HTMLButtonElement[];
+		let index = 0;
+
+		function show(i: number) {
+			index = (i + slides.length) % slides.length;
+			slides.forEach((slide, n) => slide.toggleAttribute('hidden', n !== index));
+			dots.forEach((dot, n) => dot.setAttribute('aria-selected', n === index ? 'true' : 'false'));
+		}
+
+		dots.forEach((dot, i) => dot.addEventListener('click', () => show(i)));
+		prevBtn.addEventListener('click', () => show(index - 1));
+		nextBtn.addEventListener('click', () => show(index + 1));
+		show(0);
+	}
+</script>
+
 <style>
-	.hero {
-		padding-block: var(--space-3xl) var(--space-2xl);
+	/* Full-width background bands — the band itself spans the viewport,
+	   while a nested .container keeps the actual content at the same max
+	   width as every other section instead of the background looking like
+	   a floating inset card. */
+	.band-subtle {
+		background: var(--color-bg-subtle);
+	}
+
+	.section {
+		padding-block: var(--space-2xl);
+	}
+
+	.section-intro {
 		max-width: 640px;
+	}
+
+	/* Hero */
+	.hero {
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.hero-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-2xl);
+		padding-block: var(--space-3xl) var(--space-2xl);
+	}
+
+	.hero-content {
+		max-width: 640px;
+	}
+
+	.eyebrow {
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		font-size: var(--text-small);
+		font-weight: var(--weight-medium);
+		color: var(--color-text-secondary);
+		margin: 0 0 var(--space-sm);
+	}
+
+	.hero-title {
+		font-size: clamp(2.75rem, 2rem + 4.5vw, 5rem);
+		letter-spacing: -0.02em;
+		margin-bottom: var(--space-lg);
 	}
 
 	.hero-sub {
 		font-size: var(--text-large);
+		max-width: 520px;
 		margin-bottom: var(--space-lg);
 	}
 
@@ -195,149 +269,237 @@ const testimonials = [
 		flex-wrap: wrap;
 	}
 
-	.section {
-		padding-block: var(--space-2xl);
-	}
-
-	.bg-subtle {
-		background: var(--color-bg-subtle);
-	}
-
-	.section-intro {
-		max-width: 640px;
-	}
-
-	/* Trust bar */
-	.trust-bar {
-		padding-block: var(--space-lg);
-		border-block: 1px solid var(--color-border);
-	}
-
-	.trust-bar ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--space-md) var(--space-xl);
-	}
-
-	.trust-bar li {
-		font-size: var(--text-small);
-		font-weight: var(--weight-medium);
-		color: var(--color-text-secondary);
-	}
-
-	/* Services preview */
-	.service-grid {
-		list-style: none;
-		margin: var(--space-xl) 0;
-		padding: 0;
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-		gap: var(--space-lg);
-	}
-
-	.service-card {
+	.hero-mark {
+		flex-shrink: 0;
+		width: 180px;
+		height: 180px;
 		border: 1px solid var(--color-border);
-		border-radius: var(--radius-lg);
-		padding: var(--space-lg);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
-	.service-card h3 {
-		font-size: var(--text-h4);
+	.hero-mark span {
+		font-family: var(--font-heading);
+		font-weight: var(--weight-light);
+		font-size: 3rem;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
 	}
 
-	.service-card p {
-		margin-bottom: 0;
-	}
-
-	/* Why choose us */
-	.benefit-grid {
-		list-style: none;
-		margin: var(--space-xl) 0 0;
-		padding: 0;
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-		gap: var(--space-lg);
-	}
-
-	.benefit-card h3 {
-		font-size: var(--text-h4);
-	}
-
-	.benefit-card p {
-		margin-bottom: 0;
-	}
-
-	/* Work preview */
-	.work-grid {
-		list-style: none;
-		margin: var(--space-xl) 0;
-		padding: 0;
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--space-md);
-	}
-
-	.work-item img {
-		width: 100%;
-		aspect-ratio: 4 / 3;
-		object-fit: cover;
-		border-radius: var(--radius-md);
-		background: var(--color-bg-subtle);
-		transition: transform 0.15s ease;
-	}
-
-	.work-item:hover img {
-		transform: scale(1.02);
+	@media (max-width: 860px) {
+		.hero-mark {
+			display: none;
+		}
 	}
 
 	@media (max-width: 640px) {
-		.work-grid {
-			grid-template-columns: repeat(2, 1fr);
+		.hero-inner {
+			padding-block: var(--space-2xl) var(--space-xl);
 		}
 	}
 
-	@media (max-width: 400px) {
-		.work-grid {
-			grid-template-columns: 1fr;
+	/* Selected work — masonry */
+	.work-section {
+		padding-top: var(--space-3xl);
+	}
+
+	/* Base state is CSS multi-column — a reasonable immediate render for
+	   no-JS visitors and before initMasonry() runs. Once JS measures real
+	   image heights it re-parents items into .masonry-col flex columns
+	   (shortest-column-first), which never leaves the gap that
+	   column-count + break-inside:avoid can produce when a tall item gets
+	   pushed to the next column early. */
+	.masonry {
+		margin-top: var(--space-xl);
+		column-count: 3;
+		column-gap: var(--space-md);
+	}
+
+	.masonry.masonry-js {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-md);
+	}
+
+	.masonry :global(.masonry-col) {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	.masonry-item {
+		display: block;
+		width: 100%;
+		border-radius: var(--radius-md);
+		overflow: hidden;
+	}
+
+	.masonry:not(.masonry-js) .masonry-item {
+		margin-bottom: var(--space-md);
+		break-inside: avoid;
+	}
+
+	.masonry-item img {
+		width: 100%;
+		height: auto;
+		display: block;
+		transition: transform 0.15s ease;
+	}
+
+	.masonry-item:hover img {
+		transform: scale(1.02);
+	}
+
+	@media (max-width: 720px) {
+		.masonry:not(.masonry-js) {
+			column-count: 2;
 		}
 	}
 
-	/* Testimonials */
-	.testimonial-grid {
+	@media (max-width: 480px) {
+		.masonry:not(.masonry-js) {
+			column-count: 1;
+		}
+	}
+
+	.view-all {
+		margin-top: var(--space-xl);
+	}
+
+	/* Career timeline — a vertical rail with a dot per era; type scale
+	   steps up from earliest to most recent role so the hierarchy itself
+	   tells the story of growth across the career, not just the copy. */
+	.timeline {
 		list-style: none;
-		margin: var(--space-xl) 0 0;
+		margin: var(--space-2xl) 0 0;
 		padding: 0;
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-		gap: var(--space-lg);
+		position: relative;
 	}
 
-	.testimonial-card {
-		margin: 0;
+	.timeline::before {
+		content: '';
+		position: absolute;
+		left: 5px;
+		top: 6px;
+		bottom: 6px;
+		width: 1px;
+		background: var(--color-border);
+	}
+
+	.timeline-item {
+		position: relative;
+		padding-left: var(--space-xl);
+		padding-bottom: var(--space-2xl);
+	}
+
+	.timeline-item:last-child {
+		padding-bottom: 0;
+	}
+
+	.timeline-dot {
+		position: absolute;
+		left: 0;
+		top: 8px;
+		width: 11px;
+		height: 11px;
+		border-radius: 50%;
 		background: var(--color-bg);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-lg);
-		padding: var(--space-lg);
+		border: 1px solid var(--color-text);
 	}
 
-	.testimonial-card p {
-		font-size: var(--text-large);
+	.timeline-item:last-child .timeline-dot {
+		background: var(--color-text);
+	}
+
+	.timeline-content h3 {
+		font-size: calc(var(--text-h4) + var(--i, 0) * 0.3rem);
+		margin-bottom: var(--space-xs);
+	}
+
+	.timeline-role {
+		font-size: var(--text-small);
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+		text-transform: lowercase;
+		margin-bottom: var(--space-sm);
+	}
+
+	.timeline-content p:last-child {
+		max-width: 560px;
+		margin-bottom: 0;
+	}
+
+	/* Testimonial */
+	.testimonial-section {
+		text-align: center;
+	}
+
+	.testimonial-track {
+		margin: 0 auto;
+		max-width: 760px;
+	}
+
+	.testimonial {
+		margin: 0;
+	}
+
+	.testimonial p {
+		font-size: var(--text-h3);
+		font-weight: var(--weight-light);
+		line-height: var(--line-height-tight);
 		color: var(--color-text);
 		margin-bottom: var(--space-md);
 	}
 
-	.testimonial-card footer {
+	.testimonial cite {
+		font-style: normal;
 		font-size: var(--text-small);
 		color: var(--color-text-secondary);
 	}
 
-	.testimonial-card cite {
-		font-style: normal;
-		font-weight: var(--weight-semibold);
+	.testimonial-controls {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-lg);
+		margin-top: var(--space-lg);
+	}
+
+	.testimonial-arrow {
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: 50%;
+		border: 1px solid var(--color-border);
+		background: var(--color-bg);
 		color: var(--color-text);
+		cursor: pointer;
+	}
+
+	.testimonial-arrow:hover {
+		background: var(--color-bg-subtle);
+	}
+
+	.testimonial-dots {
+		display: flex;
+		gap: var(--space-xs);
+	}
+
+	.testimonial-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		border: none;
+		background: var(--color-border);
+		padding: 0;
+		cursor: pointer;
+	}
+
+	.testimonial-dot[aria-selected='true'] {
+		background: var(--color-text);
 	}
 
 	/* Contact — two columns, last section before the footer */
