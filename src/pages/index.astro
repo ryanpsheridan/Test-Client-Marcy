@@ -26,14 +26,14 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	-->
 	<section class="featured" id="featured">
 		<div class="featured-stage">
-			<a href={`/portfolio/${projects[0].slug}/`} class="featured-image-link" id="featured-link">
+			<button type="button" class="featured-image-link" id="featured-link" data-slug={projects[0].slug}>
 				<img
 					src={projects[0].heroImage.src}
 					alt={projects[0].heroImage.alt}
 					class="featured-image"
 					id="featured-image"
 				/>
-			</a>
+			</button>
 		</div>
 
 		<div class="container featured-controls">
@@ -64,7 +64,7 @@ const totalLabel = String(projects.length).padStart(2, '0');
 
 <script>
 	const section = document.getElementById('featured');
-	const link = document.getElementById('featured-link') as HTMLAnchorElement | null;
+	const link = document.getElementById('featured-link') as HTMLButtonElement | null;
 	const image = document.getElementById('featured-image') as HTMLImageElement | null;
 	const indexLabel = document.getElementById('featured-index');
 	const prevBtn = document.getElementById('featured-prev');
@@ -85,7 +85,7 @@ const totalLabel = String(projects.length).padStart(2, '0');
 
 			image!.src = thumbImg.src;
 			image!.alt = thumb.getAttribute('aria-label') || '';
-			link!.href = `/portfolio/${slug}/`;
+			link!.dataset.slug = slug;
 			indexLabel!.textContent = String(current + 1).padStart(2, '0');
 
 			thumbs.forEach((t, n) => t.setAttribute('aria-selected', n === current ? 'true' : 'false'));
@@ -111,6 +111,15 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => goTo(i)));
 		prevBtn.addEventListener('click', () => goTo(current - 1));
 		nextBtn.addEventListener('click', () => goTo(current + 1));
+
+		// A plain button (not <a href>) on purpose — an anchor here made
+		// the browser's native link-preview status bar pop up over the
+		// filmstrip on hover, which a page can't suppress via CSS since
+		// browsers show it deliberately (so a link's real destination
+		// can't be hidden). No href to hover means no status bar.
+		link.addEventListener('click', () => {
+			window.location.href = `/portfolio/${link.dataset.slug}/`;
+		});
 
 		document.addEventListener('keydown', (e) => {
 			if (e.key === 'ArrowLeft') goTo(current - 1);
@@ -164,6 +173,10 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		padding: 0;
+		border: 0;
+		background: none;
+		cursor: pointer;
 	}
 
 	.featured-image {
@@ -174,13 +187,22 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		border-radius: var(--radius-md);
 	}
 
+	/* Desktop relies on the filmstrip (thumbnails are a large enough
+	   target with a mouse) plus autoplay; this row is mobile-only, where
+	   filmstrip thumbs are small and autoplay is easier to want to stop. */
 	.featured-controls {
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--space-xl);
-		padding-block: var(--space-sm);
+		display: none;
+	}
+
+	@media (max-width: 640px) {
+		.featured-controls {
+			flex-shrink: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: var(--space-xl);
+			padding-block: var(--space-sm);
+		}
 	}
 
 	.featured-control {
