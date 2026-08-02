@@ -26,7 +26,7 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	-->
 	<section class="featured" id="featured">
 		<div class="featured-stage">
-			<button type="button" class="featured-image-link" id="featured-link" data-slug={projects[0].slug}>
+			<button type="button" class="featured-image-link" id="featured-link">
 				<img
 					src={projects[0].heroImage.src}
 					alt={projects[0].heroImage.alt}
@@ -34,6 +34,7 @@ const totalLabel = String(projects.length).padStart(2, '0');
 					id="featured-image"
 				/>
 			</button>
+			<span class="cursor-label" id="cursor-label" aria-hidden="true">next</span>
 		</div>
 
 		<div class="container featured-controls">
@@ -48,8 +49,6 @@ const totalLabel = String(projects.length).padStart(2, '0');
 					<button
 						type="button"
 						class="filmstrip-thumb"
-						data-index={i}
-						data-slug={project.slug}
 						role="tab"
 						aria-selected={i === 0 ? 'true' : 'false'}
 						aria-label={project.title}
@@ -66,12 +65,13 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	const section = document.getElementById('featured');
 	const link = document.getElementById('featured-link') as HTMLButtonElement | null;
 	const image = document.getElementById('featured-image') as HTMLImageElement | null;
+	const cursorLabel = document.getElementById('cursor-label');
 	const indexLabel = document.getElementById('featured-index');
 	const prevBtn = document.getElementById('featured-prev');
 	const nextBtn = document.getElementById('featured-next');
 	const filmstrip = document.getElementById('featured-filmstrip');
 
-	if (section && link && image && indexLabel && prevBtn && nextBtn && filmstrip) {
+	if (section && link && image && cursorLabel && indexLabel && prevBtn && nextBtn && filmstrip) {
 		const thumbs = Array.from(filmstrip.children) as HTMLButtonElement[];
 		let current = 0;
 		let timer: ReturnType<typeof setInterval> | null = null;
@@ -80,12 +80,10 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		function show(i: number) {
 			current = (i + thumbs.length) % thumbs.length;
 			const thumb = thumbs[current];
-			const { slug } = thumb.dataset;
 			const thumbImg = thumb.querySelector('img') as HTMLImageElement;
 
 			image!.src = thumbImg.src;
 			image!.alt = thumb.getAttribute('aria-label') || '';
-			link!.dataset.slug = slug;
 			indexLabel!.textContent = String(current + 1).padStart(2, '0');
 
 			thumbs.forEach((t, n) => t.setAttribute('aria-selected', n === current ? 'true' : 'false'));
@@ -112,14 +110,35 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		prevBtn.addEventListener('click', () => goTo(current - 1));
 		nextBtn.addEventListener('click', () => goTo(current + 1));
 
+		// Left half of the image = prev, right half = next, with a small
+		// label that follows the cursor to show which. Hover-only — mouse
+		// devices get this; touch devices keep the explicit prev/next row
+		// (mobile-only in CSS) since there's no hover to reveal the split.
 		// A plain button (not <a href>) on purpose — an anchor here made
 		// the browser's native link-preview status bar pop up over the
 		// filmstrip on hover, which a page can't suppress via CSS since
 		// browsers show it deliberately (so a link's real destination
 		// can't be hidden). No href to hover means no status bar.
-		link.addEventListener('click', () => {
-			window.location.href = `/portfolio/${link.dataset.slug}/`;
-		});
+		const hasHover = window.matchMedia('(hover: hover)').matches;
+
+		if (hasHover) {
+			link.addEventListener('mousemove', (e) => {
+				const rect = link!.getBoundingClientRect();
+				const isNext = e.clientX - rect.left > rect.width / 2;
+				cursorLabel!.textContent = isNext ? 'next' : 'prev';
+				cursorLabel!.style.left = `${e.clientX}px`;
+				cursorLabel!.style.top = `${e.clientY}px`;
+			});
+
+			link.addEventListener('mouseenter', () => cursorLabel!.classList.add('visible'));
+			link.addEventListener('mouseleave', () => cursorLabel!.classList.remove('visible'));
+
+			link.addEventListener('click', (e) => {
+				const rect = link!.getBoundingClientRect();
+				const isNext = e.clientX - rect.left > rect.width / 2;
+				goTo(current + (isNext ? 1 : -1));
+			});
+		}
 
 		document.addEventListener('keydown', (e) => {
 			if (e.key === 'ArrowLeft') goTo(current - 1);
@@ -185,6 +204,30 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		height: 100%;
 		object-fit: contain;
 		border-radius: var(--radius-md);
+	}
+
+	/* Follows the cursor over the image to show which half — left/prev,
+	   right/next — a click will act on. Fixed positioning + JS-set
+	   left/top (viewport coordinates from the mousemove event) rather
+	   than relative-to-image, so it isn't clipped by the image's own
+	   bounding box near the edges. */
+	.cursor-label {
+		position: fixed;
+		left: 0;
+		top: 0;
+		transform: translate(-50%, -50%);
+		font-size: var(--text-small);
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+		text-transform: lowercase;
+		pointer-events: none;
+		opacity: 0;
+		z-index: 10;
+		transition: opacity 0.1s ease;
+	}
+
+	.cursor-label.visible {
+		opacity: 1;
 	}
 
 	/* Desktop relies on the filmstrip (thumbnails are a large enough
@@ -254,20 +297,25 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		display: none;
 	}
 
+	/* aspect-ratio (not a fixed height) so a 4:3 shape holds regardless of
+	   how wide flex-grow ends up making each thumb — width is still
+	   whatever divides the full row evenly, height just follows from it. */
 	.filmstrip-thumb {
-		flex: 1 1 64px;
+		flex: 1 1 0;
 		min-width: 64px;
-		height: 56px;
+		aspect-ratio: 4 / 3;
 		padding: 0;
 		border: 0;
 		cursor: pointer;
-		opacity: 0.45;
-		transition: opacity 0.15s ease;
+		opacity: 0.5;
+		filter: grayscale(1);
+		transition: opacity 0.15s ease, filter 0.15s ease;
 	}
 
 	.filmstrip-thumb:hover,
 	.filmstrip-thumb[aria-selected='true'] {
 		opacity: 1;
+		filter: grayscale(0);
 	}
 
 	.filmstrip-thumb img {
