@@ -17,9 +17,7 @@ import { projects } from '../data/projects';
 			Selected campaigns, brand direction, and packaging work from two decades in beauty and
 			consumer products, including work for Wella and Clairol.
 		</p>
-	</section>
 
-	<section class="container section">
 		<div class="masonry" id="portfolio-masonry">
 			{projects.map((project) => (
 				<a href={`/portfolio/${project.slug}/`} class="masonry-item">
@@ -58,7 +56,13 @@ import { projects } from '../data/projects';
 	   (shortest-column-first), which never leaves the gap that
 	   column-count + break-inside:avoid can produce when a tall item gets
 	   pushed to the next column early. */
+	/* Half the old gap here: this used to be two stacked .section blocks,
+	   each with its own top/bottom padding, so the space between the lead
+	   paragraph and the grid was double-counted (padding-bottom of one
+	   plus padding-top of the next). --space-2xl alone equals exactly
+	   half of that. */
 	.masonry {
+		margin-top: var(--space-2xl);
 		column-count: 3;
 		column-gap: var(--space-md);
 	}
