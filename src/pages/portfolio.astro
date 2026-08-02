@@ -6,12 +6,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 // shared lightbox dialog on click. Masonry layout (not a uniform grid) to
 // match the varied crops/orientations of real campaign photography.
 const images = [
-	{ src: '/images/gallery/placeholder-1.svg', alt: 'Replace with a real, descriptive alt text for this project' },
-	{ src: '/images/gallery/placeholder-2.svg', alt: 'Replace with a real, descriptive alt text for this project' },
-	{ src: '/images/gallery/placeholder-3.svg', alt: 'Replace with a real, descriptive alt text for this project' },
-	{ src: '/images/gallery/placeholder-4.svg', alt: 'Replace with a real, descriptive alt text for this project' },
-	{ src: '/images/gallery/placeholder-5.svg', alt: 'Replace with a real, descriptive alt text for this project' },
-	{ src: '/images/gallery/placeholder-6.svg', alt: 'Replace with a real, descriptive alt text for this project' },
+	{ src: '/images/gallery/wella-campaign-double-exposure.jpg', alt: 'Wella campaign creative combining bold color art with a model portrait' },
+	{ src: '/images/gallery/wella-pink-hair-campaign.jpg', alt: 'Wella hair color campaign portrait featuring soft pink-toned hair' },
+	{ src: '/images/gallery/wella-color-perfect-campaign.jpg', alt: 'Wella Color Perfect campaign photograph' },
+	{ src: '/images/gallery/clairol-colorstrong-packaging.jpg', alt: 'Clairol ColorStrong packaging design' },
+	{ src: '/images/gallery/wella-koleston-packaging.jpg', alt: 'Wella Koleston Brilho Infinito packaging lineup' },
+	{ src: '/images/gallery/clairol-campaign-video-still.jpg', alt: 'Still from a Clairol brand campaign video' },
+	{ src: '/images/gallery/clairol-allure-award.jpg', alt: "Allure Editors' Choice Award graphic for a Clairol root-touch-up product" },
 ];
 ---
 
@@ -20,12 +21,12 @@ const images = [
 		<h1>portfolio</h1>
 		<p class="lead">
 			Selected campaigns, brand direction, and packaging work from two decades in beauty and
-			consumer products &mdash; replace this copy and every photo below with the real thing.
+			consumer products, including work for Wella and Clairol.
 		</p>
 	</section>
 
 	<section class="container section">
-		<div class="masonry">
+		<div class="masonry" id="portfolio-masonry">
 			{images.map((image) => (
 				<button type="button" class="gallery-trigger masonry-item" data-src={image.src} data-alt={image.alt}>
 					<img src={image.src} alt={image.alt} loading="lazy" />
@@ -41,6 +42,11 @@ const images = [
 </BaseLayout>
 
 <script>
+	import { initMasonry } from '../scripts/masonry';
+
+	const masonryEl = document.getElementById('portfolio-masonry');
+	if (masonryEl) initMasonry(masonryEl);
+
 	const dialog = document.getElementById('lightbox') as HTMLDialogElement;
 	const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
 
@@ -104,18 +110,41 @@ const images = [
 		-webkit-tap-highlight-color: transparent;
 	}
 
+	/* Base state is CSS multi-column — a reasonable immediate render for
+	   no-JS visitors and before initMasonry() runs. Once JS measures real
+	   image heights it re-parents items into .masonry-col flex columns
+	   (shortest-column-first), which never leaves the gap that
+	   column-count + break-inside:avoid can produce when a tall item gets
+	   pushed to the next column early. */
 	.masonry {
 		column-count: 3;
 		column-gap: var(--space-md);
 	}
 
+	.masonry.masonry-js {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-md);
+	}
+
+	.masonry :global(.masonry-col) {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
 	.masonry-item {
 		display: block;
 		width: 100%;
-		margin-bottom: var(--space-md);
-		break-inside: avoid;
 		border-radius: var(--radius-md);
 		overflow: hidden;
+	}
+
+	.masonry:not(.masonry-js) .masonry-item {
+		margin-bottom: var(--space-md);
+		break-inside: avoid;
 	}
 
 	.masonry-item img {
@@ -131,13 +160,13 @@ const images = [
 	}
 
 	@media (max-width: 720px) {
-		.masonry {
+		.masonry:not(.masonry-js) {
 			column-count: 2;
 		}
 	}
 
 	@media (max-width: 480px) {
-		.masonry {
+		.masonry:not(.masonry-js) {
 			column-count: 1;
 		}
 	}

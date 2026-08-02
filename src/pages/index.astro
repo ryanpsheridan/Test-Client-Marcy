@@ -32,11 +32,11 @@ const highlights = [
 ];
 
 const workPreview = [
-	{ src: '/images/gallery/placeholder-1.svg', alt: 'Replace with a real, descriptive alt text for this project' },
-	{ src: '/images/gallery/placeholder-2.svg', alt: 'Replace with a real, descriptive alt text for this project' },
-	{ src: '/images/gallery/placeholder-3.svg', alt: 'Replace with a real, descriptive alt text for this project' },
-	{ src: '/images/gallery/placeholder-4.svg', alt: 'Replace with a real, descriptive alt text for this project' },
-	{ src: '/images/gallery/placeholder-5.svg', alt: 'Replace with a real, descriptive alt text for this project' },
+	{ src: '/images/gallery/wella-campaign-double-exposure.jpg', alt: 'Wella campaign creative combining bold color art with a model portrait' },
+	{ src: '/images/gallery/wella-pink-hair-campaign.jpg', alt: 'Wella hair color campaign portrait featuring soft pink-toned hair' },
+	{ src: '/images/gallery/clairol-colorstrong-packaging.jpg', alt: 'Clairol ColorStrong packaging design' },
+	{ src: '/images/gallery/wella-color-perfect-campaign.jpg', alt: 'Wella Color Perfect campaign photograph' },
+	{ src: '/images/gallery/wella-koleston-packaging.jpg', alt: 'Wella Koleston Brilho Infinito packaging lineup' },
 ];
 ---
 
@@ -69,7 +69,7 @@ const workPreview = [
 		<p class="section-intro">
 			A look at recent campaigns and brand work &mdash; visit the full <a href="/portfolio/">portfolio</a> for more.
 		</p>
-		<div class="masonry">
+		<div class="masonry" id="work-masonry">
 			{workPreview.map((image) => (
 				<a href="/portfolio/" class="masonry-item">
 					<img src={image.src} alt={image.alt} loading="lazy" />
@@ -145,6 +145,13 @@ const workPreview = [
 		</div>
 	</section>
 </BaseLayout>
+
+<script>
+	import { initMasonry } from '../scripts/masonry';
+
+	const el = document.getElementById('work-masonry');
+	if (el) initMasonry(el);
+</script>
 
 <style>
 	/* Full-width background bands — the band itself spans the viewport,
@@ -255,19 +262,42 @@ const workPreview = [
 		padding-top: var(--space-3xl);
 	}
 
+	/* Base state is CSS multi-column — a reasonable immediate render for
+	   no-JS visitors and before initMasonry() runs. Once JS measures real
+	   image heights it re-parents items into .masonry-col flex columns
+	   (shortest-column-first), which never leaves the gap that
+	   column-count + break-inside:avoid can produce when a tall item gets
+	   pushed to the next column early. */
 	.masonry {
 		margin-top: var(--space-xl);
 		column-count: 3;
 		column-gap: var(--space-md);
 	}
 
+	.masonry.masonry-js {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-md);
+	}
+
+	.masonry :global(.masonry-col) {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
 	.masonry-item {
 		display: block;
 		width: 100%;
-		margin-bottom: var(--space-md);
-		break-inside: avoid;
 		border-radius: var(--radius-md);
 		overflow: hidden;
+	}
+
+	.masonry:not(.masonry-js) .masonry-item {
+		margin-bottom: var(--space-md);
+		break-inside: avoid;
 	}
 
 	.masonry-item img {
@@ -282,13 +312,13 @@ const workPreview = [
 	}
 
 	@media (max-width: 720px) {
-		.masonry {
+		.masonry:not(.masonry-js) {
 			column-count: 2;
 		}
 	}
 
 	@media (max-width: 480px) {
-		.masonry {
+		.masonry:not(.masonry-js) {
 			column-count: 1;
 		}
 	}
