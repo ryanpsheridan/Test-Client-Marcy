@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { SITE_EMAIL, SITE_PHONE } from '../consts';
+---
+
+<BaseLayout title="Contact" description="Get in touch.">
+	<section class="container section">
+		<h1>Contact</h1>
+		<p>
+			<a href={`tel:${SITE_PHONE.replace(/[^\d+]/g, '')}`}>{SITE_PHONE}</a>
+			&nbsp;&middot;&nbsp;
+			<a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
+		</p>
+
+		<div class="form-wrap">
+			<ContactForm />
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.section {
+		padding-block: var(--space-2xl);
+		max-width: 560px;
+	}
+
+	.form-wrap {
+		margin-top: var(--space-xl);
+	}
+</style>

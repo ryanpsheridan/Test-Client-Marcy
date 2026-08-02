@@ -1,0 +1,94 @@
+:root {
+	/* Typography */
+	--font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+	--font-heading: 'DM Sans', system-ui, -apple-system, sans-serif;
+
+	/* Text scale — three sizes for body copy, used for emphasis/hierarchy
+	   within running text (never for headings). */
+	--text-small: 0.875rem;
+	--text-body: 1rem;
+	--text-large: 1.125rem;
+
+	/* Heading scale — h5 intentionally matches --text-body (a heading
+	   sized like a paragraph, for tight label-style headings), then
+	   steps up to --text-h1. --text-display is only for the largest
+	   hero headline, layered on top of h1 rather than in place of it.
+	   H1/H2/H3/display use clamp() so they scale down fluidly on narrow
+	   phones instead of staying at their full desktop size — a fixed
+	   2.75rem/3.5rem headline eats most of a 375px screen otherwise. The
+	   upper bound (desktop size) is unchanged from before. */
+	--text-h5: 1rem;
+	--text-h4: 1.25rem;
+	--text-h3: clamp(1.375rem, 1.2rem + 0.9vw, 1.625rem);
+	--text-h2: clamp(1.625rem, 1.3rem + 1.6vw, 2.125rem);
+	--text-h1: clamp(2rem, 1.5rem + 2.5vw, 2.75rem);
+	--text-display: clamp(2.25rem, 1.4rem + 4.25vw, 3.5rem);
+
+	/* Two weights above normal: medium for UI/labels, semibold as the
+	   heaviest weight in the system (no 700/bold — semibold covers it). */
+	--weight-normal: 400;
+	--weight-medium: 500;
+	--weight-semibold: 600;
+
+	--line-height-tight: 1.2;
+	--line-height-body: 1.6;
+
+	/* Spacing scale — generous, editorial-inspired negative space.
+	   Padding/margin/gap should always read from this, never a raw px value. */
+	--space-xs: 0.5rem;
+	--space-sm: 0.75rem;
+	--space-md: 1rem;
+	--space-lg: 1.75rem;
+	--space-xl: 3rem;
+	--space-2xl: 5rem;
+	--space-3xl: 7.5rem;
+
+	/* Color — light-only, Medium-inspired: near-black text on white,
+	   a single blue accent, hairline gray borders instead of heavy
+	   shadows/cards. Re-theme per client by swapping --color-accent*;
+	   the rest of the site reads from these tokens, not hardcoded hex. */
+	--color-text: #242424;
+	--color-text-secondary: #6B6B6B;
+	--color-bg: #FFFFFF;
+	--color-bg-subtle: #F9F9F9;
+	--color-border: #E5E5E5;
+
+	--color-accent: #2952CC;
+	--color-accent-hover: #1F3FA3;
+	--color-accent-contrast: #FFFFFF;
+
+	/* Ink — the monochrome black used for primary buttons and other
+	   high-emphasis controls. Kept separate from --color-accent so the
+	   site stays monochromatic outside of hyperlinks, which are the only
+	   place --color-accent (blue) should show up. */
+	--color-ink: #1A1A1A;
+	--color-ink-hover: #000000;
+	--color-ink-contrast: #FFFFFF;
+
+	/* Semantic accents — same intent as SimplySheet's calculator system,
+	   kept here so any future client tool/form-state UI stays consistent. */
+	--color-accent-positive: #1B8A5A;
+	--color-accent-positive-bg: #E6F4EC;
+	--color-accent-caution: #B5720A;
+	--color-accent-caution-bg: #FBF0DD;
+	--color-accent-critical: #C23A3A;
+	--color-accent-critical-bg: #FBEAEA;
+	--color-accent-info: #2952CC;
+	--color-accent-info-bg: #EAEFFB;
+
+	/* Radius / shadow — mostly square/lightly-rounded content blocks,
+	   with a dedicated pill radius for buttons and tag-like controls
+	   (Medium's signature fully-rounded CTA shape). Shadows stay barely
+	   visible; the design leans on whitespace and hairline borders
+	   instead of elevation. */
+	--radius-sm: 4px;
+	--radius-md: 8px;
+	--radius-lg: 12px;
+	--radius-pill: 999px;
+	--shadow-sm: 0 1px 2px rgba(36, 36, 36, 0.04);
+	--shadow-md: 0 2px 10px rgba(36, 36, 36, 0.06);
+
+	/* Layout */
+	--content-width: 1120px;
+	--focus-ring: 0 0 0 3px rgba(41, 82, 204, 0.35);
+}
