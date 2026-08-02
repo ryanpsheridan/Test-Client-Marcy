@@ -35,22 +35,46 @@ const galleryPreview = [
 	{ src: '/images/gallery/placeholder-1.svg', alt: 'Replace with a real, descriptive alt text for this project' },
 	{ src: '/images/gallery/placeholder-2.svg', alt: 'Replace with a real, descriptive alt text for this project' },
 	{ src: '/images/gallery/placeholder-3.svg', alt: 'Replace with a real, descriptive alt text for this project' },
+	{ src: '/images/gallery/placeholder-4.svg', alt: 'Replace with a real, descriptive alt text for this project' },
+	{ src: '/images/gallery/placeholder-5.svg', alt: 'Replace with a real, descriptive alt text for this project' },
 ];
 ---
 
 <BaseLayout title="Home" description={SITE_DESCRIPTION}>
 	<script type="application/ld+json" set:html={JSON.stringify(schema)} />
 
-	<section class="hero container">
-		<h1>marcy cona</h1>
-		<p class="hero-sub">
-			Global creative director shaping brand, advertising, and product strategy in beauty
-			and consumer products &mdash; over two decades building work that balances innovation
-			with accessibility.
+	<section class="hero">
+		<div class="container hero-inner">
+			<div class="hero-content">
+				<p class="eyebrow">global creative director</p>
+				<h1 class="hero-title">marcy cona</h1>
+				<p class="hero-sub">
+					Shaping brand, advertising, and product strategy in beauty and consumer products
+					&mdash; over two decades building work that balances innovation with accessibility.
+				</p>
+				<div class="hero-actions">
+					<a href="/gallery/" class="btn btn-primary">view work</a>
+					<a href="/contact/" class="btn btn-secondary">get in touch</a>
+				</div>
+				<p class="hero-meta">brand development &middot; advertising &middot; consumer products</p>
+			</div>
+			<div class="hero-mark" aria-hidden="true">
+				<span>mc</span>
+			</div>
+		</div>
+	</section>
+
+	<section class="container section work-section">
+		<h2>selected work</h2>
+		<p class="section-intro">
+			A look at recent work &mdash; visit the <a href="/gallery/">full gallery</a> for more.
 		</p>
-		<div class="hero-actions">
-			<a href="/gallery/" class="btn btn-primary">View work</a>
-			<a href="/contact/" class="btn btn-secondary">Get in touch</a>
+		<div class="masonry">
+			{galleryPreview.map((image) => (
+				<a href="/gallery/" class="masonry-item">
+					<img src={image.src} alt={image.alt} loading="lazy" />
+				</a>
+			))}
 		</div>
 	</section>
 
@@ -71,78 +95,53 @@ const galleryPreview = [
 		</p>
 	</section>
 
-	<section class="container section bg-subtle">
-		<h2>experience</h2>
-		<ul class="highlight-grid">
-			{highlights.map((item) => (
-				<li class="highlight-card">
-					<h3>{item.org}</h3>
-					<p class="highlight-role">{item.role}</p>
-					<p>{item.description}</p>
-				</li>
-			))}
-		</ul>
+	<section class="band band-subtle">
+		<div class="container section">
+			<h2>experience</h2>
+			<ul class="highlight-grid">
+				{highlights.map((item) => (
+					<li class="highlight-card">
+						<h3>{item.org}</h3>
+						<p class="highlight-role">{item.role}</p>
+						<p>{item.description}</p>
+					</li>
+				))}
+			</ul>
+		</div>
 	</section>
 
-	<section class="container section">
-		<h2>selected work</h2>
-		<p class="section-intro">
-			A look at recent work &mdash; visit the <a href="/gallery/">full gallery</a> for more.
-		</p>
-		<ul class="work-grid">
-			{galleryPreview.map((image) => (
-				<li>
-					<a href="/gallery/" class="work-item">
-						<img src={image.src} alt={image.alt} loading="lazy" />
-					</a>
-				</li>
-			))}
-		</ul>
-		<a href="/gallery/" class="btn btn-secondary">View full gallery</a>
-	</section>
-
-	<section class="container section bg-subtle contact-section">
-		<div class="contact-grid">
-			<div class="contact-info">
-				<h2>get in touch</h2>
-				<p>
-					Open to conversations about creative direction, brand strategy, and new
-					opportunities.
-				</p>
-				<p class="contact-details">
-					<a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
-				</p>
-			</div>
-			<div class="contact-form-wrap">
-				<ContactForm />
+	<section class="band band-subtle">
+		<div class="container section contact-section">
+			<div class="contact-grid">
+				<div class="contact-info">
+					<h2>get in touch</h2>
+					<p>
+						Open to conversations about creative direction, brand strategy, and new
+						opportunities.
+					</p>
+					<p class="contact-details">
+						<a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
+					</p>
+				</div>
+				<div class="contact-form-wrap">
+					<ContactForm />
+				</div>
 			</div>
 		</div>
 	</section>
 </BaseLayout>
 
 <style>
-	.hero {
-		padding-block: var(--space-3xl) var(--space-2xl);
-		max-width: 640px;
-	}
-
-	.hero-sub {
-		font-size: var(--text-large);
-		margin-bottom: var(--space-lg);
-	}
-
-	.hero-actions {
-		display: flex;
-		gap: var(--space-md);
-		flex-wrap: wrap;
+	/* Full-width background bands — the band itself spans the viewport,
+	   while a nested .container keeps the actual content at the same max
+	   width as every other section instead of the background looking like
+	   a floating inset card. */
+	.band-subtle {
+		background: var(--color-bg-subtle);
 	}
 
 	.section {
 		padding-block: var(--space-2xl);
-	}
-
-	.bg-subtle {
-		background: var(--color-bg-subtle);
 	}
 
 	.section-intro {
@@ -151,6 +150,132 @@ const galleryPreview = [
 
 	.bio {
 		max-width: 640px;
+	}
+
+	/* Hero */
+	.hero {
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.hero-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-2xl);
+		padding-block: var(--space-3xl) var(--space-2xl);
+	}
+
+	.hero-content {
+		max-width: 640px;
+	}
+
+	.eyebrow {
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		font-size: var(--text-small);
+		font-weight: var(--weight-medium);
+		color: var(--color-text-secondary);
+		margin: 0 0 var(--space-sm);
+	}
+
+	.hero-title {
+		font-size: clamp(2.75rem, 2rem + 4.5vw, 5rem);
+		letter-spacing: -0.02em;
+		margin-bottom: var(--space-lg);
+	}
+
+	.hero-sub {
+		font-size: var(--text-large);
+		max-width: 520px;
+		margin-bottom: var(--space-lg);
+	}
+
+	.hero-actions {
+		display: flex;
+		gap: var(--space-md);
+		flex-wrap: wrap;
+		margin-bottom: var(--space-lg);
+	}
+
+	.hero-meta {
+		font-size: var(--text-small);
+		color: var(--color-text-secondary);
+		text-transform: lowercase;
+		margin: 0;
+	}
+
+	.hero-mark {
+		flex-shrink: 0;
+		width: 180px;
+		height: 180px;
+		border: 1px solid var(--color-border);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.hero-mark span {
+		font-family: var(--font-heading);
+		font-weight: var(--weight-light);
+		font-size: 3rem;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
+	}
+
+	@media (max-width: 860px) {
+		.hero-mark {
+			display: none;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.hero-inner {
+			padding-block: var(--space-2xl) var(--space-xl);
+		}
+	}
+
+	/* Selected work — masonry */
+	.work-section {
+		padding-top: var(--space-3xl);
+	}
+
+	.masonry {
+		margin-top: var(--space-xl);
+		column-count: 3;
+		column-gap: var(--space-md);
+	}
+
+	.masonry-item {
+		display: block;
+		width: 100%;
+		margin-bottom: var(--space-md);
+		break-inside: avoid;
+		border-radius: var(--radius-md);
+		overflow: hidden;
+	}
+
+	.masonry-item img {
+		width: 100%;
+		height: auto;
+		display: block;
+		transition: transform 0.15s ease;
+	}
+
+	.masonry-item:hover img {
+		transform: scale(1.02);
+	}
+
+	@media (max-width: 720px) {
+		.masonry {
+			column-count: 2;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.masonry {
+			column-count: 1;
+		}
 	}
 
 	/* Experience */
@@ -184,41 +309,6 @@ const galleryPreview = [
 
 	.highlight-card p:last-child {
 		margin-bottom: 0;
-	}
-
-	/* Work preview */
-	.work-grid {
-		list-style: none;
-		margin: var(--space-xl) 0;
-		padding: 0;
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--space-md);
-	}
-
-	.work-item img {
-		width: 100%;
-		aspect-ratio: 4 / 3;
-		object-fit: cover;
-		border-radius: var(--radius-md);
-		background: var(--color-bg-subtle);
-		transition: transform 0.15s ease;
-	}
-
-	.work-item:hover img {
-		transform: scale(1.02);
-	}
-
-	@media (max-width: 640px) {
-		.work-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media (max-width: 400px) {
-		.work-grid {
-			grid-template-columns: 1fr;
-		}
 	}
 
 	/* Contact — two columns, last section before the footer */
