@@ -3,7 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 // Real images live in public/images/gallery/ — see CLAUDE.md's "Gallery /
 // Photo Uploads" section for the naming convention. Every photo opens in a
-// shared lightbox dialog on click.
+// shared lightbox dialog on click. Masonry layout (not a uniform grid) to
+// match the varied crops/orientations of real campaign photography.
 const images = [
 	{ src: '/images/gallery/placeholder-1.svg', alt: 'Replace with a real, descriptive alt text for this project' },
 	{ src: '/images/gallery/placeholder-2.svg', alt: 'Replace with a real, descriptive alt text for this project' },
@@ -14,25 +15,23 @@ const images = [
 ];
 ---
 
-<BaseLayout title="Gallery" description="Selected creative direction and brand work from Marcy Cona.">
+<BaseLayout title="Portfolio" description="Selected creative direction and brand work from Marcy Cona, including campaigns for Wella and Clairol.">
 	<section class="container section">
-		<h1>gallery</h1>
+		<h1>portfolio</h1>
 		<p class="lead">
-			Selected campaigns, brand work, and creative direction &mdash; replace this copy and
-			every photo below with the real thing.
+			Selected campaigns, brand direction, and packaging work from two decades in beauty and
+			consumer products &mdash; replace this copy and every photo below with the real thing.
 		</p>
 	</section>
 
 	<section class="container section">
-		<ul class="photo-grid">
+		<div class="masonry">
 			{images.map((image) => (
-				<li>
-					<button type="button" class="gallery-trigger grid-item" data-src={image.src} data-alt={image.alt}>
-						<img src={image.src} alt={image.alt} loading="lazy" />
-					</button>
-				</li>
+				<button type="button" class="gallery-trigger masonry-item" data-src={image.src} data-alt={image.alt}>
+					<img src={image.src} alt={image.alt} loading="lazy" />
+				</button>
 			))}
-		</ul>
+		</div>
 	</section>
 
 	<dialog id="lightbox" class="lightbox" aria-label="Photo preview">
@@ -105,37 +104,41 @@ const images = [
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.photo-grid {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--space-md);
+	.masonry {
+		column-count: 3;
+		column-gap: var(--space-md);
 	}
 
-	.grid-item img {
+	.masonry-item {
+		display: block;
 		width: 100%;
-		aspect-ratio: 4 / 3;
-		object-fit: cover;
+		margin-bottom: var(--space-md);
+		break-inside: avoid;
 		border-radius: var(--radius-md);
+		overflow: hidden;
+	}
+
+	.masonry-item img {
+		width: 100%;
+		height: auto;
+		display: block;
 		background: var(--color-bg-subtle);
 		transition: transform 0.15s ease;
 	}
 
-	.grid-item:hover img {
+	.masonry-item:hover img {
 		transform: scale(1.02);
 	}
 
 	@media (max-width: 720px) {
-		.photo-grid {
-			grid-template-columns: repeat(2, 1fr);
+		.masonry {
+			column-count: 2;
 		}
 	}
 
 	@media (max-width: 480px) {
-		.photo-grid {
-			grid-template-columns: 1fr;
+		.masonry {
+			column-count: 1;
 		}
 	}
 
