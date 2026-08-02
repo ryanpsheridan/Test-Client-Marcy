@@ -39,8 +39,8 @@ const { project, prev, next } = Astro.props;
 	</section>
 
 	{project.supportingImages && project.supportingImages.length > 0 && (
-		<section class="container section supporting-section">
-			<div class="supporting-grid">
+		<section class="section supporting-section">
+			<div class="supporting-column">
 				{project.supportingImages.map((image) => (
 					<img src={image.src} alt={image.alt} class="supporting-image" loading="lazy" />
 				))}
@@ -101,26 +101,32 @@ const { project, prev, next } = Astro.props;
 		padding-block: var(--space-lg) var(--space-2xl);
 	}
 
-	/* object-fit: contain (not cover) — a hero cropped to a fixed height
-	   would slice off the bottom of tall/square packaging shots (product
-	   name, shade name), which matters for this content. Letterboxing on
-	   a subtle background reads better than losing part of the shot. */
+	/* Always full width, no cropping — height:auto instead of a fixed
+	   max-height so the image renders at its natural aspect ratio at full
+	   container width rather than a browser sizing quirk shrinking the
+	   box (and adding unwanted side padding) when width and max-height
+	   were both constrained without an explicit height. */
 	.hero-image {
+		display: block;
 		width: 100%;
-		max-height: 760px;
-		object-fit: contain;
-		background: var(--color-bg-subtle);
+		height: auto;
 		border-radius: var(--radius-lg);
 	}
 
+	/* Supporting images run in a single narrower, centered "editorial"
+	   column rather than a multi-up grid — reads like a magazine spread
+	   under the full-width hero instead of a thumbnail wall. */
 	.supporting-section {
 		padding-block: 0 var(--space-2xl);
+		padding-inline: var(--space-lg);
 	}
 
-	.supporting-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: var(--space-md);
+	.supporting-column {
+		max-width: 760px;
+		margin-inline: auto;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
 	}
 
 	.supporting-image {

@@ -104,13 +104,13 @@ export const projects: Project[] = [
 		client: 'clairol',
 		industry: 'packaging',
 		heroImage: {
-			src: '/images/gallery/clairol-colorstrong-packaging.jpg',
-			alt: 'Clairol ColorStrong packaging design',
+			src: '/images/gallery/clairol-colorstrong-toscana-packaging.jpg',
+			alt: 'Clairol ColorStrong packaging, Toscana medium brown shade',
 		},
 		supportingImages: [
 			{
-				src: '/images/gallery/clairol-colorstrong-toscana-packaging.jpg',
-				alt: 'Clairol ColorStrong packaging, Toscana medium brown shade',
+				src: '/images/gallery/clairol-colorstrong-packaging.jpg',
+				alt: 'Clairol ColorStrong packaging design',
 			},
 			{
 				src: '/images/gallery/clairol-natural-instincts-packaging.jpg',

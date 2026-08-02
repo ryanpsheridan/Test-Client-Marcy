@@ -7,7 +7,7 @@ export const SITE_TITLE = 'Marcy Cona';
 export const SITE_DESCRIPTION = 'Portfolio of Marcy Cona — two decades of creative direction, brand, and advertising work in beauty and consumer products.';
 
 export const SITE_PHONE = ''; // no public phone number for this portfolio site
-export const SITE_EMAIL = 'sheridesignn@gmail.com';
+export const SITE_EMAIL = 'marcycona@gmail.com';
 export const SITE_ADDRESS = ''; // no public address — portfolio site, not a storefront
 
 // Header shows Home/Portfolio/About inline plus a separate "let's connect"

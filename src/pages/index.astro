@@ -52,58 +52,65 @@ const testimonials = [
 	},
 ];
 
-// Hand-picked for visual variety in the preview rather than the first N
-// in file order (which would otherwise skew toward whichever brand has
-// the most project entries).
-const previewSlugs = [
-	'wella-color-perfect-campaign',
-	'clairol-packaging-collection',
-	'wella-campaign-photography',
-	'clairol-color-campaign',
-	'wella-koleston-packaging',
-	'clairol-beach-campaign',
-];
-const workPreview = previewSlugs
-	.map((slug) => projects.find((p) => p.slug === slug))
-	.filter((p): p is (typeof projects)[number] => Boolean(p));
+const totalLabel = String(projects.length).padStart(2, '0');
 ---
 
 <BaseLayout title="Home" description={SITE_DESCRIPTION}>
 	<script type="application/ld+json" set:html={JSON.stringify(schema)} />
 
-	<section class="hero">
-		<div class="container hero-inner">
-			<div class="hero-content">
-				<p class="eyebrow">creative direction &middot; beauty &amp; consumer products</p>
-				<h1 class="hero-title">marcy cona</h1>
-				<p class="hero-sub">
-					A selection of brand, advertising, and product work from two decades in beauty and
-					consumer goods &mdash; including campaigns for Wella and Clairol.
-				</p>
-				<div class="hero-actions">
-					<a href="/portfolio/" class="btn btn-primary">view work</a>
-					<a href="/about/" class="btn btn-secondary">about marcy</a>
-				</div>
-			</div>
-			<div class="hero-mark" aria-hidden="true">
-				<span>mc</span>
-			</div>
+	<!--
+		Featured-work viewer — the entire "hero" for the homepage. Replaces
+		the previous name/tagline hero (that copy now lives on /about/) so
+		the very first thing a visitor sees is the work itself: one project
+		at a time, contained and centered (never full-bleed/full-screen),
+		with a counter, prev/next, and a thumbnail filmstrip to jump
+		directly to any project — same idea as a contained project viewer,
+		just built from scratch for this site rather than copied wholesale.
+	-->
+	<section class="featured">
+		<div class="container featured-topbar">
+			<p class="featured-count"><span id="featured-index">01</span> / {totalLabel}</p>
+			<a href="/portfolio/" class="featured-all-link">view all work</a>
 		</div>
-	</section>
 
-	<section class="container section work-section">
-		<h2>selected work</h2>
-		<p class="section-intro">
-			A look at recent campaigns and brand work &mdash; visit the full <a href="/portfolio/">portfolio</a> for more.
-		</p>
-		<div class="masonry" id="work-masonry">
-			{workPreview.map((project) => (
-				<a href={`/portfolio/${project.slug}/`} class="masonry-item">
-					<img src={project.heroImage.src} alt={project.heroImage.alt} loading="lazy" />
-				</a>
-			))}
+		<div class="featured-stage">
+			<button type="button" class="featured-arrow featured-prev" id="featured-prev" aria-label="Previous project">&larr;</button>
+			<a href={`/portfolio/${projects[0].slug}/`} class="featured-image-link" id="featured-link">
+				<img
+					src={projects[0].heroImage.src}
+					alt={projects[0].heroImage.alt}
+					class="featured-image"
+					id="featured-image"
+				/>
+			</a>
+			<button type="button" class="featured-arrow featured-next" id="featured-next" aria-label="Next project">&rarr;</button>
 		</div>
-		<a href="/portfolio/" class="btn btn-secondary view-all">view all work</a>
+
+		<div class="container featured-caption">
+			<p class="featured-title" id="featured-title">{projects[0].title}</p>
+			<p class="featured-client" id="featured-client">{projects[0].client} &middot; {projects[0].industry}</p>
+		</div>
+
+		<div class="featured-filmstrip-wrap">
+			<div class="featured-filmstrip" id="featured-filmstrip" role="tablist" aria-label="Select project">
+				{projects.map((project, i) => (
+					<button
+						type="button"
+						class="filmstrip-thumb"
+						data-index={i}
+						data-slug={project.slug}
+						data-title={project.title}
+						data-client={project.client}
+						data-industry={project.industry}
+						role="tab"
+						aria-selected={i === 0 ? 'true' : 'false'}
+						aria-label={project.title}
+					>
+						<img src={project.heroImage.src} alt="" loading="lazy" />
+					</button>
+				))}
+			</div>
+		</div>
 	</section>
 
 	<section class="band band-subtle">
@@ -177,34 +184,65 @@ const workPreview = previewSlugs
 </BaseLayout>
 
 <script>
-	import { initMasonry } from '../scripts/masonry';
+	// Featured-work viewer
+	const link = document.getElementById('featured-link') as HTMLAnchorElement | null;
+	const image = document.getElementById('featured-image') as HTMLImageElement | null;
+	const indexLabel = document.getElementById('featured-index');
+	const titleLabel = document.getElementById('featured-title');
+	const clientLabel = document.getElementById('featured-client');
+	const prevBtn = document.getElementById('featured-prev');
+	const nextBtn = document.getElementById('featured-next');
+	const filmstrip = document.getElementById('featured-filmstrip');
 
-	const el = document.getElementById('work-masonry');
-	if (el) initMasonry(el);
+	if (link && image && indexLabel && titleLabel && clientLabel && prevBtn && nextBtn && filmstrip) {
+		const thumbs = Array.from(filmstrip.children) as HTMLButtonElement[];
+		let current = 0;
+
+		function show(i: number) {
+			current = (i + thumbs.length) % thumbs.length;
+			const thumb = thumbs[current];
+			const { slug, title, client, industry } = thumb.dataset;
+			const thumbImg = thumb.querySelector('img') as HTMLImageElement;
+
+			image!.src = thumbImg.src;
+			image!.alt = thumb.getAttribute('aria-label') || '';
+			link!.href = `/portfolio/${slug}/`;
+			titleLabel!.textContent = title || '';
+			clientLabel!.textContent = `${client} · ${industry}`;
+			indexLabel!.textContent = String(current + 1).padStart(2, '0');
+
+			thumbs.forEach((t, n) => t.setAttribute('aria-selected', n === current ? 'true' : 'false'));
+			thumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+		}
+
+		thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => show(i)));
+		prevBtn.addEventListener('click', () => show(current - 1));
+		nextBtn.addEventListener('click', () => show(current + 1));
+	}
 
 	// Testimonial carousel — only wired up when there's more than one
 	// slide (the dots/arrows are omitted from the markup entirely
 	// otherwise, so this is a no-op for a single quote).
 	const track = document.getElementById('testimonial-track') as HTMLDivElement | null;
 	const dotsWrap = document.getElementById('testimonial-dots');
-	const prevBtn = document.getElementById('testimonial-prev');
-	const nextBtn = document.getElementById('testimonial-next');
+	const testPrevBtn = document.getElementById('testimonial-prev');
+	const testNextBtn = document.getElementById('testimonial-next');
 
-	if (track && dotsWrap && prevBtn && nextBtn) {
+	if (track && dotsWrap && testPrevBtn && testNextBtn) {
 		const slides = Array.from(track.children) as HTMLElement[];
 		const dots = Array.from(dotsWrap.children) as HTMLButtonElement[];
 		let index = 0;
 
-		function show(i: number) {
+		function showTestimonial(i: number) {
 			index = (i + slides.length) % slides.length;
 			slides.forEach((slide, n) => slide.toggleAttribute('hidden', n !== index));
 			dots.forEach((dot, n) => dot.setAttribute('aria-selected', n === index ? 'true' : 'false'));
 		}
 
-		dots.forEach((dot, i) => dot.addEventListener('click', () => show(i)));
-		prevBtn.addEventListener('click', () => show(index - 1));
-		nextBtn.addEventListener('click', () => show(index + 1));
-		show(0);
+		dots.forEach((dot, i) => dot.addEventListener('click', () => showTestimonial(i)));
+		testPrevBtn.addEventListener('click', () => showTestimonial(index - 1));
+		testNextBtn.addEventListener('click', () => showTestimonial(index + 1));
+		showTestimonial(0);
 	}
 </script>
 
@@ -225,149 +263,150 @@ const workPreview = previewSlugs
 		max-width: 640px;
 	}
 
-	/* Hero */
-	.hero {
+	/* Featured-work viewer */
+	.featured {
 		border-bottom: 1px solid var(--color-border);
+		padding-block: var(--space-xl) 0;
 	}
 
-	.hero-inner {
+	.featured-topbar {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--space-2xl);
-		padding-block: var(--space-3xl) var(--space-2xl);
+		margin-bottom: var(--space-md);
 	}
 
-	.hero-content {
-		max-width: 640px;
-	}
-
-	.eyebrow {
-		text-transform: uppercase;
-		letter-spacing: 0.14em;
+	.featured-count {
 		font-size: var(--text-small);
-		font-weight: var(--weight-medium);
 		color: var(--color-text-secondary);
-		margin: 0 0 var(--space-sm);
+		margin: 0;
+		font-variant-numeric: tabular-nums;
 	}
 
-	.hero-title {
-		font-size: clamp(2.75rem, 2rem + 4.5vw, 5rem);
-		letter-spacing: -0.02em;
-		margin-bottom: var(--space-lg);
+	.featured-all-link {
+		font-size: var(--text-small);
+		text-transform: lowercase;
+		color: var(--color-text-secondary);
 	}
 
-	.hero-sub {
-		font-size: var(--text-large);
-		max-width: 520px;
-		margin-bottom: var(--space-lg);
-	}
-
-	.hero-actions {
-		display: flex;
-		gap: var(--space-md);
-		flex-wrap: wrap;
-	}
-
-	.hero-mark {
-		flex-shrink: 0;
-		width: 180px;
-		height: 180px;
-		border: 1px solid var(--color-border);
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.hero-mark span {
-		font-family: var(--font-heading);
-		font-weight: var(--weight-light);
-		font-size: 3rem;
-		letter-spacing: -0.02em;
+	.featured-all-link:hover {
 		color: var(--color-text);
 	}
 
-	@media (max-width: 860px) {
-		.hero-mark {
+	/* The stage is bounded, not full-bleed — object-fit:contain inside a
+	   max-height box, generous whitespace around it, exactly so a very
+	   tall or very wide project photo never gets cropped or blown up to
+	   fill the screen. */
+	.featured-stage {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-lg);
+		padding-inline: var(--space-lg);
+	}
+
+	.featured-image-link {
+		display: block;
+		max-width: min(900px, 100%);
+	}
+
+	.featured-image {
+		display: block;
+		width: auto;
+		max-width: 100%;
+		height: auto;
+		max-height: 60vh;
+		border-radius: var(--radius-md);
+	}
+
+	.featured-arrow {
+		flex-shrink: 0;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 50%;
+		border: 1px solid var(--color-border);
+		background: var(--color-bg);
+		color: var(--color-text);
+		cursor: pointer;
+	}
+
+	.featured-arrow:hover {
+		background: var(--color-bg-subtle);
+	}
+
+	@media (max-width: 640px) {
+		.featured-arrow {
 			display: none;
 		}
 	}
 
-	@media (max-width: 640px) {
-		.hero-inner {
-			padding-block: var(--space-2xl) var(--space-xl);
-		}
+	.featured-caption {
+		text-align: center;
+		padding-block: var(--space-lg) var(--space-md);
 	}
 
-	/* Selected work — masonry */
-	.work-section {
-		padding-top: var(--space-3xl);
+	.featured-title {
+		font-size: var(--text-large);
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+		text-transform: lowercase;
+		margin: 0;
 	}
 
-	/* Base state is CSS multi-column — a reasonable immediate render for
-	   no-JS visitors and before initMasonry() runs. Once JS measures real
-	   image heights it re-parents items into .masonry-col flex columns
-	   (shortest-column-first), which never leaves the gap that
-	   column-count + break-inside:avoid can produce when a tall item gets
-	   pushed to the next column early. */
-	.masonry {
-		margin-top: var(--space-xl);
-		column-count: 3;
-		column-gap: var(--space-md);
+	.featured-client {
+		font-size: var(--text-small);
+		color: var(--color-text-secondary);
+		text-transform: lowercase;
+		margin: var(--space-xs) 0 0;
 	}
 
-	.masonry.masonry-js {
+	/* Filmstrip — full-width horizontal scrubber, edge to edge rather than
+	   boxed inside .container, so it reads as a strip along the bottom of
+	   the viewer rather than another centered content block. */
+	.featured-filmstrip-wrap {
+		margin-top: var(--space-lg);
+		border-top: 1px solid var(--color-border);
+	}
+
+	.featured-filmstrip {
 		display: flex;
-		align-items: flex-start;
-		gap: var(--space-md);
+		gap: 2px;
+		overflow-x: auto;
+		scrollbar-width: none;
 	}
 
-	.masonry :global(.masonry-col) {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-md);
-		flex: 1 1 0;
-		min-width: 0;
+	.featured-filmstrip::-webkit-scrollbar {
+		display: none;
 	}
 
-	.masonry-item {
-		display: block;
+	.filmstrip-thumb {
+		flex-shrink: 0;
+		width: 84px;
+		height: 64px;
+		padding: 0;
+		border: 0;
+		cursor: pointer;
+		opacity: 0.45;
+		transition: opacity 0.15s ease;
+	}
+
+	.filmstrip-thumb:hover,
+	.filmstrip-thumb[aria-selected='true'] {
+		opacity: 1;
+	}
+
+	.filmstrip-thumb img {
 		width: 100%;
-		border-radius: var(--radius-md);
-		overflow: hidden;
-	}
-
-	.masonry:not(.masonry-js) .masonry-item {
-		margin-bottom: var(--space-md);
-		break-inside: avoid;
-	}
-
-	.masonry-item img {
-		width: 100%;
-		height: auto;
+		height: 100%;
+		object-fit: cover;
 		display: block;
-		transition: transform 0.15s ease;
-	}
-
-	.masonry-item:hover img {
-		transform: scale(1.02);
-	}
-
-	@media (max-width: 720px) {
-		.masonry:not(.masonry-js) {
-			column-count: 2;
-		}
 	}
 
 	@media (max-width: 480px) {
-		.masonry:not(.masonry-js) {
-			column-count: 1;
+		.filmstrip-thumb {
+			width: 64px;
+			height: 48px;
 		}
-	}
-
-	.view-all {
-		margin-top: var(--space-xl);
 	}
 
 	/* Career timeline — a vertical rail with a dot per era; type scale
