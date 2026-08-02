@@ -15,40 +15,57 @@ const schema = {
 
 // Chronological, earliest to latest — this is a retrospective ("here's
 // what I've made"), not a resume, so it reads as a career arc rather than
-// leading with a current title. TODO: add real start/end years once
-// confirmed (see year: undefined below) — a public portfolio shouldn't
-// guess at someone's employment dates.
+// leading with a current title. Dates from her LinkedIn profile.
 const career = [
 	{
 		org: 'Procter & Gamble',
-		role: 'Creative Director',
-		year: undefined,
-		description: 'Early career foundation in global brand development and creative strategy.',
+		role: 'Global Creative Director',
+		year: '2003–2016',
+		description: 'Thirteen years leading global creative direction, brand development, and creative strategy.',
 	},
 	{
 		org: 'Coty',
-		role: 'Creative Director',
-		year: undefined,
-		description: 'Leadership roles contributing to global brand development and creative strategy for major beauty brands.',
+		role: 'Global Creative Director',
+		year: '2016–2020',
+		description: 'Continued leading global creative direction and brand development for major beauty brands.',
 	},
 	{
 		org: 'Wella Company',
 		role: 'Global Creative Director',
-		year: undefined,
+		year: '2020–2024',
 		description: 'Shaping brand development, advertising, and consumer product strategy across the portfolio, drawing on deep expertise as a hair care specialist.',
 	},
 ];
 
-// TODO: add the other quotes from the live site here once supplied — the
-// carousel controls (dots/arrows) only render once there's more than one.
 const testimonials = [
 	{
 		quote: 'I’ve had the pleasure to work with Marcy over several years, during our time together at P&G, and then at Wella. I could not recommend Marcy enough as an outstanding expert in all aspects of Beauty Production — and in particular for Hair.',
 		name: 'Javier Sandoval',
 	},
+	{
+		quote: 'I have worked with Marcy in the last 4 years in Wella. She has always been a great team member and colleague, extremely dedicated, results driven and willing to share her expertise.',
+		name: 'Sara Traversi',
+	},
+	{
+		quote: 'Marcy’s expertise was crucial during the retouching and design phases, where she oversaw every detail related to hair color, texture, and styling. She ensured that all the models’ hair looked perfect for each shot.',
+		name: 'Edward Luttrell',
+	},
 ];
 
-const workPreview = projects.slice(0, 5);
+// Hand-picked for visual variety in the preview rather than the first N
+// in file order (which would otherwise skew toward whichever brand has
+// the most project entries).
+const previewSlugs = [
+	'wella-color-perfect-campaign',
+	'clairol-packaging-collection',
+	'wella-campaign-photography',
+	'clairol-color-campaign',
+	'wella-koleston-packaging',
+	'clairol-beach-campaign',
+];
+const workPreview = previewSlugs
+	.map((slug) => projects.find((p) => p.slug === slug))
+	.filter((p): p is (typeof projects)[number] => Boolean(p));
 ---
 
 <BaseLayout title="Home" description={SITE_DESCRIPTION}>
