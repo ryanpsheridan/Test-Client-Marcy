@@ -3,26 +3,31 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const focusAreas = ['brand development', 'advertising', 'consumer products', 'packaging', 'creative strategy'];
 
-// Chronological, earliest to latest — reads as a career arc rather than
-// leading with a title. Dates and titles from her LinkedIn profile.
+// Most recent first, like LinkedIn's own experience list. `rank` is the
+// chronological order (0 = earliest) used only for the timeline's type
+// scale — kept separate from display order so "most recent = biggest"
+// still holds regardless of which order the list itself is in.
 const career = [
 	{
-		org: 'Procter & Gamble',
+		org: 'Wella Company',
 		role: 'Global Creative Director',
-		year: '2003–2016',
-		description: 'Thirteen years leading global creative direction, brand development, and creative strategy.',
+		year: '2020–2024',
+		description: 'Shaping brand development, advertising, and consumer product strategy across the portfolio, drawing on deep expertise as a hair care specialist.',
+		rank: 2,
 	},
 	{
 		org: 'Coty',
 		role: 'Global Creative Director',
 		year: '2016–2020',
 		description: 'Continued leading global creative direction and brand development for major beauty brands.',
+		rank: 1,
 	},
 	{
-		org: 'Wella Company',
+		org: 'Procter & Gamble',
 		role: 'Global Creative Director',
-		year: '2020–2024',
-		description: 'Shaping brand development, advertising, and consumer product strategy across the portfolio, drawing on deep expertise as a hair care specialist.',
+		year: '2003–2016',
+		description: 'Thirteen years leading global creative direction, brand development, and creative strategy.',
+		rank: 0,
 	},
 ];
 
@@ -94,8 +99,8 @@ const testimonials = [
 		<div class="container section">
 			<h2>career</h2>
 			<ol class="timeline">
-				{career.map((item, i) => (
-					<li class="timeline-item" style={`--i: ${i}`}>
+				{career.map((item) => (
+					<li class="timeline-item" style={`--i: ${item.rank}`}>
 						<span class="timeline-dot" aria-hidden="true"></span>
 						<div class="timeline-content">
 							<h3>{item.org}</h3>
@@ -277,6 +282,9 @@ const testimonials = [
 		padding-bottom: 0;
 	}
 
+	/* Same treatment for every era, deliberately — a filled/highlighted
+	   dot on the most recent role read as "currently works here," which
+	   isn't the case. */
 	.timeline-dot {
 		position: absolute;
 		left: 0;
@@ -286,10 +294,6 @@ const testimonials = [
 		border-radius: 50%;
 		background: var(--color-bg);
 		border: 1px solid var(--color-text);
-	}
-
-	.timeline-item:last-child .timeline-dot {
-		background: var(--color-text);
 	}
 
 	.timeline-content h3 {

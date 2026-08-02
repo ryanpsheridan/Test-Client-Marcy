@@ -277,13 +277,13 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	   Thumbs are a fixed small size and the row is centered rather than
 	   stretched to fill the width — leaves space on either side on wide
 	   screens, but keeps the 4:3 crop honest instead of distorting width. */
-	/* A little breathing room below the strip instead of sitting flush on
-	   the very last pixel — on mobile, browser chrome (address bar/home
-	   indicator) can otherwise sit right on top of it. env() adds the
-	   safe-area on notched/gesture-nav devices on top of that. */
+	/* Flush with the very bottom of the viewport — env() only adds space
+	   on notched/gesture-nav devices that actually need it for their
+	   safe area; everywhere else this is 0, so no dead gap under the
+	   strip. */
 	.featured-filmstrip-wrap {
 		flex-shrink: 0;
-		padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
+		padding-bottom: env(safe-area-inset-bottom);
 	}
 
 	.featured-filmstrip {
@@ -308,6 +308,14 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		opacity: 0.5;
 		filter: grayscale(1);
 		transition: opacity 0.15s ease, filter 0.15s ease;
+	}
+
+	/* ~20% larger on mobile — a bigger tap target, since a mouse-precision
+	   64px thumb is a little small to hit reliably with a finger. */
+	@media (max-width: 640px) {
+		.filmstrip-thumb {
+			width: 77px;
+		}
 	}
 
 	.filmstrip-thumb:hover,

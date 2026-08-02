@@ -12,9 +12,13 @@ export const SITE_ADDRESS = ''; // no public address — portfolio site, not a s
 
 // Header is just a logo + hamburger at every screen size — this full set
 // is what populates the overlay menu (and the footer nav).
+//
+// Portfolio is intentionally left out — the homepage viewer already
+// serves that role. The page itself (src/pages/portfolio.astro and
+// portfolio/[slug].astro) still exists and is reachable directly; it's
+// just not linked from nav. Add it back here if that changes.
 export const NAV_LINKS = [
 	{ label: 'Home', href: '/' },
-	{ label: 'Portfolio', href: '/portfolio/' },
 	{ label: 'About', href: '/about/' },
 	{ label: 'Contact', href: '/contact/' },
 ];
