@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-	site: 'https://example.com', // TODO: replace with the client's real domain before launch
+	site: 'https://marcycona.com', // intended domain per intake — not yet registered, confirm before launch
 	build: {
 		// Inline all page CSS directly into the HTML instead of splitting it
 		// into a separate hashed file. On a slow connection, an external

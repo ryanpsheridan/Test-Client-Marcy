@@ -1,32 +1,29 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// Placeholder gallery. Real images live in public/images/gallery/ — see
-// CLAUDE.md's "Gallery / Photo Uploads" section for the naming convention
-// and the decision tree for how a given client should add new photos.
-//
-// Three sections show three different ways to lay out the same kind of
-// content (grid / featured carousel / masonry) so this page doubles as a
-// template to pick from per client rather than a single fixed layout.
-// Every photo opens in a shared lightbox dialog on click.
+// Real images live in public/images/gallery/ — see CLAUDE.md's "Gallery /
+// Photo Uploads" section for the naming convention. Every photo opens in a
+// shared lightbox dialog on click.
 const images = [
-	{ src: '/images/gallery/placeholder-1.svg', alt: 'Replace with a real, descriptive alt text for this photo' },
-	{ src: '/images/gallery/placeholder-2.svg', alt: 'Replace with a real, descriptive alt text for this photo' },
-	{ src: '/images/gallery/placeholder-3.svg', alt: 'Replace with a real, descriptive alt text for this photo' },
-	{ src: '/images/gallery/placeholder-4.svg', alt: 'Replace with a real, descriptive alt text for this photo' },
-	{ src: '/images/gallery/placeholder-5.svg', alt: 'Replace with a real, descriptive alt text for this photo' },
-	{ src: '/images/gallery/placeholder-6.svg', alt: 'Replace with a real, descriptive alt text for this photo' },
+	{ src: '/images/gallery/placeholder-1.svg', alt: 'Replace with a real, descriptive alt text for this project' },
+	{ src: '/images/gallery/placeholder-2.svg', alt: 'Replace with a real, descriptive alt text for this project' },
+	{ src: '/images/gallery/placeholder-3.svg', alt: 'Replace with a real, descriptive alt text for this project' },
+	{ src: '/images/gallery/placeholder-4.svg', alt: 'Replace with a real, descriptive alt text for this project' },
+	{ src: '/images/gallery/placeholder-5.svg', alt: 'Replace with a real, descriptive alt text for this project' },
+	{ src: '/images/gallery/placeholder-6.svg', alt: 'Replace with a real, descriptive alt text for this project' },
 ];
 ---
 
-<BaseLayout title="Gallery" description="A look at our work.">
+<BaseLayout title="Gallery" description="Selected creative direction and brand work from Marcy Cona.">
 	<section class="container section">
-		<h1>Gallery</h1>
-		<p class="lead">A look at our work — replace this copy and every photo below with the real thing.</p>
+		<h1>gallery</h1>
+		<p class="lead">
+			Selected campaigns, brand work, and creative direction &mdash; replace this copy and
+			every photo below with the real thing.
+		</p>
 	</section>
 
 	<section class="container section">
-		<h2>Recent work</h2>
 		<ul class="photo-grid">
 			{images.map((image) => (
 				<li>
@@ -38,46 +35,6 @@ const images = [
 		</ul>
 	</section>
 
-	<section class="container section bg-subtle">
-		<h2>Featured</h2>
-		<div class="carousel-block">
-			<button type="button" id="featured-trigger" class="gallery-trigger carousel-featured" data-src={images[0].src} data-alt={images[0].alt}>
-				<img id="featured-img" src={images[0].src} alt={images[0].alt} />
-			</button>
-			<div class="carousel-thumbs">
-				<button type="button" class="carousel-nav carousel-prev" aria-label="Scroll thumbnails left">&lsaquo;</button>
-				<div id="carousel-track" class="carousel-track" role="region" aria-label="More photos" tabindex="0">
-					<div class="carousel-track-inner">
-						{images.map((image, i) => (
-							<button
-								type="button"
-								class:list={['carousel-thumb', { active: i === 0 }]}
-								data-src={image.src}
-								data-alt={image.alt}
-								aria-pressed={i === 0 ? 'true' : 'false'}
-								aria-label={`Show photo ${i + 1} of ${images.length}`}
-							>
-								<img src={image.src} alt="" loading="lazy" />
-							</button>
-						))}
-					</div>
-				</div>
-				<button type="button" class="carousel-nav carousel-next" aria-label="Scroll thumbnails right">&rsaquo;</button>
-			</div>
-		</div>
-	</section>
-
-	<section class="container section">
-		<h2>More photos</h2>
-		<div class="masonry">
-			{images.map((image) => (
-				<button type="button" class="gallery-trigger masonry-item" data-src={image.src} data-alt={image.alt}>
-					<img src={image.src} alt={image.alt} loading="lazy" />
-				</button>
-			))}
-		</div>
-	</section>
-
 	<dialog id="lightbox" class="lightbox" aria-label="Photo preview">
 		<button type="button" id="lightbox-close" class="lightbox-close" aria-label="Close">&times;</button>
 		<img id="lightbox-img" src="" alt="" />
@@ -87,9 +44,6 @@ const images = [
 <script>
 	const dialog = document.getElementById('lightbox') as HTMLDialogElement;
 	const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
-	const track = document.getElementById('carousel-track') as HTMLDivElement;
-	const featuredImg = document.getElementById('featured-img') as HTMLImageElement;
-	const featuredTrigger = document.getElementById('featured-trigger') as HTMLButtonElement;
 
 	let lastTrigger: HTMLElement | null = null;
 
@@ -110,34 +64,6 @@ const images = [
 
 	document.addEventListener('click', (e) => {
 		const target = e.target as HTMLElement;
-
-		const thumb = target.closest<HTMLButtonElement>('.carousel-thumb');
-		if (thumb) {
-			track.querySelectorAll('.carousel-thumb').forEach((t) => {
-				t.classList.remove('active');
-				t.setAttribute('aria-pressed', 'false');
-			});
-			thumb.classList.add('active');
-			thumb.setAttribute('aria-pressed', 'true');
-			const { src, alt } = thumb.dataset;
-			if (src) {
-				featuredImg.src = src;
-				featuredImg.alt = alt || '';
-				featuredTrigger.dataset.src = src;
-				featuredTrigger.dataset.alt = alt || '';
-			}
-			return;
-		}
-
-		if (target.closest('.carousel-prev')) {
-			track.scrollBy({ left: -176, behavior: 'smooth' });
-			return;
-		}
-
-		if (target.closest('.carousel-next')) {
-			track.scrollBy({ left: 176, behavior: 'smooth' });
-			return;
-		}
 
 		if (target.closest('#lightbox-close')) {
 			dialog.close();
@@ -161,19 +87,14 @@ const images = [
 		padding-block: var(--space-2xl);
 	}
 
-	.bg-subtle {
-		background: var(--color-bg-subtle);
-	}
-
 	.lead {
 		font-size: var(--text-large);
 		color: var(--color-text-secondary);
 		max-width: 640px;
 	}
 
-	/* Shared trigger reset — every clickable photo is a plain button so
-	   it's keyboard-focusable and announced correctly, with none of the
-	   default button chrome. */
+	/* Plain button reset so every clickable photo stays keyboard-focusable
+	   and announced correctly, with none of the default button chrome. */
 	.gallery-trigger {
 		display: block;
 		width: 100%;
@@ -184,10 +105,9 @@ const images = [
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	/* Grid */
 	.photo-grid {
 		list-style: none;
-		margin: var(--space-xl) 0 0;
+		margin: 0;
 		padding: 0;
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
@@ -216,149 +136,6 @@ const images = [
 	@media (max-width: 480px) {
 		.photo-grid {
 			grid-template-columns: 1fr;
-		}
-	}
-
-	/* Carousel */
-	.carousel-block {
-		margin-top: var(--space-xl);
-	}
-
-	.carousel-featured {
-		margin-bottom: var(--space-md);
-	}
-
-	.carousel-featured img {
-		width: 100%;
-		height: 420px;
-		object-fit: contain;
-		background: var(--color-bg);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-lg);
-	}
-
-	@media (max-width: 640px) {
-		.carousel-featured img {
-			height: 260px;
-		}
-	}
-
-	.carousel-thumbs {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--space-sm);
-	}
-
-	/* The scroll container itself must NOT be a centering flexbox —
-	   justify-content:center on an overflow-x:auto flex row breaks the
-	   scroll-start position, leaving the first items clipped and
-	   unreachable. Instead the container is a plain block and an inner
-	   width:max-content row is centered with auto margins: centered when
-	   it fits, flush left and fully scrollable once it overflows. */
-	.carousel-track {
-		overflow-x: auto;
-		scroll-snap-type: x mandatory;
-		scrollbar-width: none;
-		min-width: 0;
-	}
-
-	.carousel-track::-webkit-scrollbar {
-		display: none;
-	}
-
-	.carousel-track-inner {
-		display: flex;
-		gap: var(--space-sm);
-		width: max-content;
-		max-width: 100%;
-		margin-inline: auto;
-		padding-block: 2px;
-	}
-
-	.carousel-thumb {
-		flex-shrink: 0;
-		scroll-snap-align: start;
-		width: 88px;
-		border-radius: var(--radius-md);
-		overflow: hidden;
-		border: 2px solid transparent;
-		transition: border-color 0.15s ease, transform 0.1s ease;
-	}
-
-	.carousel-thumb:active {
-		transform: scale(0.96);
-	}
-
-	.carousel-thumb img {
-		width: 100%;
-		aspect-ratio: 1 / 1;
-		object-fit: cover;
-		display: block;
-	}
-
-	.carousel-thumb.active {
-		border-color: var(--color-ink);
-	}
-
-	.carousel-nav {
-		flex-shrink: 0;
-		width: 2.25rem;
-		height: 2.25rem;
-		border-radius: 50%;
-		border: 1px solid var(--color-border);
-		background: var(--color-bg);
-		color: var(--color-text);
-		font-size: 1.25rem;
-		line-height: 1;
-		cursor: pointer;
-		-webkit-tap-highlight-color: transparent;
-	}
-
-	.carousel-nav:hover {
-		background: var(--color-bg-subtle);
-	}
-
-	.carousel-nav:active {
-		transform: scale(0.94);
-	}
-
-	/* Masonry */
-	.masonry {
-		margin-top: var(--space-xl);
-		column-count: 3;
-		column-gap: var(--space-md);
-	}
-
-	.masonry-item {
-		display: block;
-		width: 100%;
-		margin-bottom: var(--space-md);
-		break-inside: avoid;
-		border-radius: var(--radius-md);
-		overflow: hidden;
-	}
-
-	.masonry-item img {
-		width: 100%;
-		height: auto;
-		display: block;
-		transition: transform 0.15s ease;
-	}
-
-	.masonry-item:hover img {
-		transform: scale(1.02);
-	}
-
-	@media (max-width: 720px) {
-		.masonry {
-			column-count: 2;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.masonry {
-			column-count: 1;
 		}
 	}
 

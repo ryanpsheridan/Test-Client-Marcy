@@ -8,8 +8,13 @@ const year = new Date().getFullYear();
 		<div>
 			<p class="site-footer-title">{SITE_TITLE}</p>
 			<p>
-				<a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a><br />
-				<a href={`tel:${SITE_PHONE.replace(/[^\d+]/g, '')}`}>{SITE_PHONE}</a>
+				<a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
+				{SITE_PHONE && (
+					<>
+						<br />
+						<a href={`tel:${SITE_PHONE.replace(/[^\d+]/g, '')}`}>{SITE_PHONE}</a>
+					</>
+				)}
 			</p>
 		</div>
 		<nav aria-label="Footer">

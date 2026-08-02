@@ -43,18 +43,19 @@
 	--space-2xl: 5rem;
 	--space-3xl: 7.5rem;
 
-	/* Color — light-only, Medium-inspired: near-black text on white,
-	   a single blue accent, hairline gray borders instead of heavy
-	   shadows/cards. Re-theme per client by swapping --color-accent*;
-	   the rest of the site reads from these tokens, not hardcoded hex. */
+	/* Color — fully monochromatic per client request: near-black text on
+	   white, hairline gray borders, no color accent anywhere (including
+	   links, which read as ink instead of blue). Re-theme per client by
+	   swapping --color-accent*; the rest of the site reads from these
+	   tokens, not hardcoded hex. */
 	--color-text: #242424;
 	--color-text-secondary: #6B6B6B;
 	--color-bg: #FFFFFF;
 	--color-bg-subtle: #F9F9F9;
 	--color-border: #E5E5E5;
 
-	--color-accent: #2952CC;
-	--color-accent-hover: #1F3FA3;
+	--color-accent: #1A1A1A;
+	--color-accent-hover: #000000;
 	--color-accent-contrast: #FFFFFF;
 
 	/* Ink — the monochrome black used for primary buttons and other
@@ -90,5 +91,5 @@
 
 	/* Layout */
 	--content-width: 1120px;
-	--focus-ring: 0 0 0 3px rgba(41, 82, 204, 0.35);
+	--focus-ring: 0 0 0 3px rgba(26, 26, 26, 0.35);
 }
