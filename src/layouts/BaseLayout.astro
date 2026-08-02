@@ -8,9 +8,16 @@ interface Props {
 	description: string;
 	image?: string;
 	noindex?: boolean;
+	/** Omit the footer — used by the homepage's single-screen viewer. */
+	noFooter?: boolean;
+	/** Body/main fill exactly 100dvh with no page scroll, header on top and
+	 *  <slot/> content stretched to fill the rest — used by the homepage's
+	 *  single-screen viewer so its bottom filmstrip sits flush with the
+	 *  viewport edge without needing position:sticky. */
+	fullHeight?: boolean;
 }
 
-const { title, description, image, noindex } = Astro.props;
+const { title, description, image, noindex, noFooter, fullHeight } = Astro.props;
 ---
 
 <!doctype html>
@@ -18,12 +25,12 @@ const { title, description, image, noindex } = Astro.props;
 	<head>
 		<BaseHead title={title} description={description} image={image} noindex={noindex} />
 	</head>
-	<body>
+	<body class:list={{ 'full-height': fullHeight }}>
 		<a href="#main-content" class="skip-link">Skip to main content</a>
 		<Header />
 		<main id="main-content">
 			<slot />
 		</main>
-		<Footer />
+		{!noFooter && <Footer />}
 	</body>
 </html>

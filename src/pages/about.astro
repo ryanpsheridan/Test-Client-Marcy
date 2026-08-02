@@ -3,10 +3,42 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const focusAreas = ['brand development', 'advertising', 'consumer products', 'packaging', 'creative strategy'];
 
+// Chronological, earliest to latest — reads as a career arc rather than
+// leading with a title. Dates and titles from her LinkedIn profile.
 const career = [
-	{ org: 'Wella Company', role: 'Global Creative Director', year: '2020–2024' },
-	{ org: 'Coty', role: 'Global Creative Director', year: '2016–2020' },
-	{ org: 'Procter & Gamble', role: 'Global Creative Director', year: '2003–2016' },
+	{
+		org: 'Procter & Gamble',
+		role: 'Global Creative Director',
+		year: '2003–2016',
+		description: 'Thirteen years leading global creative direction, brand development, and creative strategy.',
+	},
+	{
+		org: 'Coty',
+		role: 'Global Creative Director',
+		year: '2016–2020',
+		description: 'Continued leading global creative direction and brand development for major beauty brands.',
+	},
+	{
+		org: 'Wella Company',
+		role: 'Global Creative Director',
+		year: '2020–2024',
+		description: 'Shaping brand development, advertising, and consumer product strategy across the portfolio, drawing on deep expertise as a hair care specialist.',
+	},
+];
+
+const testimonials = [
+	{
+		quote: 'I’ve had the pleasure to work with Marcy over several years, during our time together at P&G, and then at Wella. I could not recommend Marcy enough as an outstanding expert in all aspects of Beauty Production — and in particular for Hair.',
+		name: 'Javier Sandoval',
+	},
+	{
+		quote: 'I have worked with Marcy in the last 4 years in Wella. She has always been a great team member and colleague, extremely dedicated, results driven and willing to share her expertise.',
+		name: 'Sara Traversi',
+	},
+	{
+		quote: 'Marcy’s expertise was crucial during the retouching and design phases, where she oversaw every detail related to hair color, texture, and styling. She ensured that all the models’ hair looked perfect for each shot.',
+		name: 'Edward Luttrell',
+	},
 ];
 ---
 
@@ -55,21 +87,89 @@ const career = [
 				alt="Marcy Cona on set with the production team, reviewing hair styling and color during a shoot"
 				class="about-photo"
 			/>
-			<ul class="about-timeline">
-				{career.map((item) => (
-					<li>
-						<span class="about-timeline-year">{item.year}</span>
-						<span class="about-timeline-org">{item.org}</span>
-					</li>
-				))}
-			</ul>
 		</aside>
 	</section>
+
+	<section class="band band-subtle">
+		<div class="container section">
+			<h2>career</h2>
+			<ol class="timeline">
+				{career.map((item, i) => (
+					<li class="timeline-item" style={`--i: ${i}`}>
+						<span class="timeline-dot" aria-hidden="true"></span>
+						<div class="timeline-content">
+							<h3>{item.org}</h3>
+							<p class="timeline-role">{item.role} &middot; {item.year}</p>
+							<p>{item.description}</p>
+						</div>
+					</li>
+				))}
+			</ol>
+		</div>
+	</section>
+
+	<section class="container section testimonial-section">
+		<div class="testimonial-track" id="testimonial-track">
+			{testimonials.map((t) => (
+				<blockquote class="testimonial">
+					<p>&ldquo;{t.quote}&rdquo;</p>
+					<footer>
+						<cite>{t.name}</cite>
+					</footer>
+				</blockquote>
+			))}
+		</div>
+		{testimonials.length > 1 && (
+			<div class="testimonial-controls">
+				<button type="button" class="testimonial-arrow" id="testimonial-prev" aria-label="Previous quote">&larr;</button>
+				<div class="testimonial-dots" id="testimonial-dots" role="tablist" aria-label="Select quote">
+					{testimonials.map((_, i) => (
+						<button
+							type="button"
+							class="testimonial-dot"
+							role="tab"
+							aria-selected={i === 0 ? 'true' : 'false'}
+							aria-label={`Quote ${i + 1} of ${testimonials.length}`}
+						></button>
+					))}
+				</div>
+				<button type="button" class="testimonial-arrow" id="testimonial-next" aria-label="Next quote">&rarr;</button>
+			</div>
+		)}
+	</section>
 </BaseLayout>
+
+<script>
+	const track = document.getElementById('testimonial-track') as HTMLDivElement | null;
+	const dotsWrap = document.getElementById('testimonial-dots');
+	const prevBtn = document.getElementById('testimonial-prev');
+	const nextBtn = document.getElementById('testimonial-next');
+
+	if (track && dotsWrap && prevBtn && nextBtn) {
+		const slides = Array.from(track.children) as HTMLElement[];
+		const dots = Array.from(dotsWrap.children) as HTMLButtonElement[];
+		let index = 0;
+
+		function show(i: number) {
+			index = (i + slides.length) % slides.length;
+			slides.forEach((slide, n) => slide.toggleAttribute('hidden', n !== index));
+			dots.forEach((dot, n) => dot.setAttribute('aria-selected', n === index ? 'true' : 'false'));
+		}
+
+		dots.forEach((dot, i) => dot.addEventListener('click', () => show(i)));
+		prevBtn.addEventListener('click', () => show(index - 1));
+		nextBtn.addEventListener('click', () => show(index + 1));
+		show(0);
+	}
+</script>
 
 <style>
 	.section {
 		padding-block: var(--space-2xl) var(--space-3xl);
+	}
+
+	.band-subtle {
+		background: var(--color-bg-subtle);
 	}
 
 	.about-grid {
@@ -134,34 +234,6 @@ const career = [
 	.about-photo {
 		width: 100%;
 		border-radius: var(--radius-lg);
-		margin-bottom: var(--space-lg);
-	}
-
-	.about-timeline {
-		list-style: none;
-		margin: 0;
-		padding: var(--space-lg) 0 0;
-		border-top: 1px solid var(--color-border);
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-sm);
-	}
-
-	.about-timeline li {
-		display: flex;
-		justify-content: space-between;
-		gap: var(--space-md);
-		font-size: var(--text-small);
-	}
-
-	.about-timeline-year {
-		color: var(--color-text-secondary);
-	}
-
-	.about-timeline-org {
-		color: var(--color-text);
-		font-weight: var(--weight-medium);
-		text-transform: lowercase;
 	}
 
 	@media (max-width: 860px) {
@@ -173,5 +245,137 @@ const career = [
 			position: static;
 			max-width: 400px;
 		}
+	}
+
+	/* Career timeline — a vertical rail with a dot per era; type scale
+	   steps up from earliest to most recent role so the hierarchy itself
+	   tells the story of growth across the career, not just the copy. */
+	.timeline {
+		list-style: none;
+		margin: var(--space-xl) 0 0;
+		padding: 0;
+		position: relative;
+	}
+
+	.timeline::before {
+		content: '';
+		position: absolute;
+		left: 5px;
+		top: 6px;
+		bottom: 6px;
+		width: 1px;
+		background: var(--color-border);
+	}
+
+	.timeline-item {
+		position: relative;
+		padding-left: var(--space-xl);
+		padding-bottom: var(--space-2xl);
+	}
+
+	.timeline-item:last-child {
+		padding-bottom: 0;
+	}
+
+	.timeline-dot {
+		position: absolute;
+		left: 0;
+		top: 8px;
+		width: 11px;
+		height: 11px;
+		border-radius: 50%;
+		background: var(--color-bg);
+		border: 1px solid var(--color-text);
+	}
+
+	.timeline-item:last-child .timeline-dot {
+		background: var(--color-text);
+	}
+
+	.timeline-content h3 {
+		font-size: calc(var(--text-h4) + var(--i, 0) * 0.3rem);
+		margin-bottom: var(--space-xs);
+	}
+
+	.timeline-role {
+		font-size: var(--text-small);
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+		text-transform: lowercase;
+		margin-bottom: var(--space-sm);
+	}
+
+	.timeline-content p:last-child {
+		max-width: 560px;
+		margin-bottom: 0;
+	}
+
+	/* Testimonial */
+	.testimonial-section {
+		text-align: center;
+	}
+
+	.testimonial-track {
+		margin: 0 auto;
+		max-width: 760px;
+	}
+
+	.testimonial {
+		margin: 0;
+	}
+
+	.testimonial p {
+		font-size: var(--text-h3);
+		font-weight: var(--weight-light);
+		line-height: var(--line-height-tight);
+		color: var(--color-text);
+		margin-bottom: var(--space-md);
+	}
+
+	.testimonial cite {
+		font-style: normal;
+		font-size: var(--text-small);
+		color: var(--color-text-secondary);
+	}
+
+	.testimonial-controls {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-lg);
+		margin-top: var(--space-lg);
+	}
+
+	.testimonial-arrow {
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: 50%;
+		border: 1px solid var(--color-border);
+		background: var(--color-bg);
+		color: var(--color-text);
+		cursor: pointer;
+	}
+
+	.testimonial-arrow:hover {
+		background: var(--color-bg-subtle);
+	}
+
+	.testimonial-dots {
+		display: flex;
+		gap: var(--space-xs);
+	}
+
+	.testimonial-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		border: none;
+		background: var(--color-border);
+		padding: 0;
+		cursor: pointer;
+	}
+
+	.testimonial-dot[aria-selected='true'] {
+		background: var(--color-text);
 	}
 </style>

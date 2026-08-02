@@ -33,6 +33,25 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
+/* Single-screen pages (currently just the homepage viewer): body fills
+   exactly one viewport with no page scroll, header keeps its natural
+   height, and <main> stretches to fill whatever's left so its content
+   can lay itself out as topbar/stage/controls/filmstrip within that
+   fixed height instead of the filmstrip needing position:sticky. */
+body.full-height {
+	height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+body.full-height main {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
 h1, h2, h3, h4, h5 {
 	font-family: var(--font-heading);
 	line-height: var(--line-height-tight);

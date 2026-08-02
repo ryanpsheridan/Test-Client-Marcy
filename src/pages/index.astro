@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ContactForm from '../components/ContactForm.astro';
-import { SITE_TITLE, SITE_DESCRIPTION, SITE_EMAIL } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { projects } from '../data/projects';
 
 const schema = {
@@ -10,71 +9,23 @@ const schema = {
 	name: SITE_TITLE,
 	description: SITE_DESCRIPTION,
 	url: Astro.site,
-	email: SITE_EMAIL,
 };
-
-// Chronological, earliest to latest — this is a retrospective ("here's
-// what I've made"), not a resume, so it reads as a career arc rather than
-// leading with a current title. Dates from her LinkedIn profile.
-const career = [
-	{
-		org: 'Procter & Gamble',
-		role: 'Global Creative Director',
-		year: '2003–2016',
-		description: 'Thirteen years leading global creative direction, brand development, and creative strategy.',
-	},
-	{
-		org: 'Coty',
-		role: 'Global Creative Director',
-		year: '2016–2020',
-		description: 'Continued leading global creative direction and brand development for major beauty brands.',
-	},
-	{
-		org: 'Wella Company',
-		role: 'Global Creative Director',
-		year: '2020–2024',
-		description: 'Shaping brand development, advertising, and consumer product strategy across the portfolio, drawing on deep expertise as a hair care specialist.',
-	},
-];
-
-const testimonials = [
-	{
-		quote: 'I’ve had the pleasure to work with Marcy over several years, during our time together at P&G, and then at Wella. I could not recommend Marcy enough as an outstanding expert in all aspects of Beauty Production — and in particular for Hair.',
-		name: 'Javier Sandoval',
-	},
-	{
-		quote: 'I have worked with Marcy in the last 4 years in Wella. She has always been a great team member and colleague, extremely dedicated, results driven and willing to share her expertise.',
-		name: 'Sara Traversi',
-	},
-	{
-		quote: 'Marcy’s expertise was crucial during the retouching and design phases, where she oversaw every detail related to hair color, texture, and styling. She ensured that all the models’ hair looked perfect for each shot.',
-		name: 'Edward Luttrell',
-	},
-];
 
 const totalLabel = String(projects.length).padStart(2, '0');
 ---
 
-<BaseLayout title="Home" description={SITE_DESCRIPTION}>
+<BaseLayout title="Home" description={SITE_DESCRIPTION} noFooter fullHeight>
 	<script type="application/ld+json" set:html={JSON.stringify(schema)} />
 
 	<!--
-		Featured-work viewer — the entire "hero" for the homepage. Replaces
-		the previous name/tagline hero (that copy now lives on /about/) so
-		the very first thing a visitor sees is the work itself: one project
-		at a time, contained and centered (never full-bleed/full-screen),
-		with a counter, prev/next, and a thumbnail filmstrip to jump
-		directly to any project — same idea as a contained project viewer,
-		just built from scratch for this site rather than copied wholesale.
+		The entire homepage: one project at a time, contained and centered
+		(never full-bleed/full-screen), filling exactly one viewport with no
+		page scroll — a single "screen" rather than a scrolling page. Career
+		history and testimonials now live on /about/; the contact form lives
+		on /contact/ — both were redundant repeated here.
 	-->
-	<section class="featured">
-		<div class="container featured-topbar">
-			<p class="featured-count"><span id="featured-index">01</span> / {totalLabel}</p>
-			<a href="/portfolio/" class="featured-all-link">view all work</a>
-		</div>
-
+	<section class="featured" id="featured">
 		<div class="featured-stage">
-			<button type="button" class="featured-arrow featured-prev" id="featured-prev" aria-label="Previous project">&larr;</button>
 			<a href={`/portfolio/${projects[0].slug}/`} class="featured-image-link" id="featured-link">
 				<img
 					src={projects[0].heroImage.src}
@@ -83,12 +34,21 @@ const totalLabel = String(projects.length).padStart(2, '0');
 					id="featured-image"
 				/>
 			</a>
-			<button type="button" class="featured-arrow featured-next" id="featured-next" aria-label="Next project">&rarr;</button>
 		</div>
 
 		<div class="container featured-caption">
 			<p class="featured-title" id="featured-title">{projects[0].title}</p>
-			<p class="featured-client" id="featured-client">{projects[0].client} &middot; {projects[0].industry}</p>
+			<p class="featured-client">
+				<span id="featured-client">{projects[0].client} &middot; {projects[0].industry}</span>
+				&nbsp;&mdash;&nbsp;
+				<a href="/portfolio/" class="featured-all-link">view all work</a>
+			</p>
+		</div>
+
+		<div class="container featured-controls">
+			<button type="button" class="featured-control" id="featured-prev">prev</button>
+			<p class="featured-count"><span id="featured-index">01</span> / {totalLabel}</p>
+			<button type="button" class="featured-control" id="featured-next">next</button>
 		</div>
 
 		<div class="featured-filmstrip-wrap">
@@ -112,79 +72,10 @@ const totalLabel = String(projects.length).padStart(2, '0');
 			</div>
 		</div>
 	</section>
-
-	<section class="band band-subtle">
-		<div class="container section">
-			<h2>career</h2>
-			<p class="section-intro">Two decades shaping brand and creative direction in beauty.</p>
-			<ol class="timeline">
-				{career.map((item, i) => (
-					<li class="timeline-item" style={`--i: ${i}`}>
-						<span class="timeline-dot" aria-hidden="true"></span>
-						<div class="timeline-content">
-							<h3>{item.org}</h3>
-							<p class="timeline-role">{item.role}{item.year && <> &middot; {item.year}</>}</p>
-							<p>{item.description}</p>
-						</div>
-					</li>
-				))}
-			</ol>
-		</div>
-	</section>
-
-	<section class="container section testimonial-section">
-		<div class="testimonial-track" id="testimonial-track">
-			{testimonials.map((t) => (
-				<blockquote class="testimonial">
-					<p>&ldquo;{t.quote}&rdquo;</p>
-					<footer>
-						<cite>{t.name}</cite>
-					</footer>
-				</blockquote>
-			))}
-		</div>
-		{testimonials.length > 1 && (
-			<div class="testimonial-controls">
-				<button type="button" class="testimonial-arrow" id="testimonial-prev" aria-label="Previous quote">&larr;</button>
-				<div class="testimonial-dots" id="testimonial-dots" role="tablist" aria-label="Select quote">
-					{testimonials.map((_, i) => (
-						<button
-							type="button"
-							class="testimonial-dot"
-							role="tab"
-							aria-selected={i === 0 ? 'true' : 'false'}
-							aria-label={`Quote ${i + 1} of ${testimonials.length}`}
-						></button>
-					))}
-				</div>
-				<button type="button" class="testimonial-arrow" id="testimonial-next" aria-label="Next quote">&rarr;</button>
-			</div>
-		)}
-	</section>
-
-	<section class="band band-subtle">
-		<div class="container section contact-section">
-			<div class="contact-grid">
-				<div class="contact-info">
-					<h2>get in touch</h2>
-					<p>
-						Open to conversations about creative direction, brand strategy, and new
-						opportunities.
-					</p>
-					<p class="contact-details">
-						<a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
-					</p>
-				</div>
-				<div class="contact-form-wrap">
-					<ContactForm />
-				</div>
-			</div>
-		</div>
-	</section>
 </BaseLayout>
 
 <script>
-	// Featured-work viewer
+	const section = document.getElementById('featured');
 	const link = document.getElementById('featured-link') as HTMLAnchorElement | null;
 	const image = document.getElementById('featured-image') as HTMLImageElement | null;
 	const indexLabel = document.getElementById('featured-index');
@@ -194,9 +85,11 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	const nextBtn = document.getElementById('featured-next');
 	const filmstrip = document.getElementById('featured-filmstrip');
 
-	if (link && image && indexLabel && titleLabel && clientLabel && prevBtn && nextBtn && filmstrip) {
+	if (section && link && image && indexLabel && titleLabel && clientLabel && prevBtn && nextBtn && filmstrip) {
 		const thumbs = Array.from(filmstrip.children) as HTMLButtonElement[];
 		let current = 0;
+		let timer: ReturnType<typeof setInterval> | null = null;
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 		function show(i: number) {
 			current = (i + thumbs.length) % thumbs.length;
@@ -215,138 +108,96 @@ const totalLabel = String(projects.length).padStart(2, '0');
 			thumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
 		}
 
-		thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => show(i)));
-		prevBtn.addEventListener('click', () => show(current - 1));
-		nextBtn.addEventListener('click', () => show(current + 1));
-	}
-
-	// Testimonial carousel — only wired up when there's more than one
-	// slide (the dots/arrows are omitted from the markup entirely
-	// otherwise, so this is a no-op for a single quote).
-	const track = document.getElementById('testimonial-track') as HTMLDivElement | null;
-	const dotsWrap = document.getElementById('testimonial-dots');
-	const testPrevBtn = document.getElementById('testimonial-prev');
-	const testNextBtn = document.getElementById('testimonial-next');
-
-	if (track && dotsWrap && testPrevBtn && testNextBtn) {
-		const slides = Array.from(track.children) as HTMLElement[];
-		const dots = Array.from(dotsWrap.children) as HTMLButtonElement[];
-		let index = 0;
-
-		function showTestimonial(i: number) {
-			index = (i + slides.length) % slides.length;
-			slides.forEach((slide, n) => slide.toggleAttribute('hidden', n !== index));
-			dots.forEach((dot, n) => dot.setAttribute('aria-selected', n === index ? 'true' : 'false'));
+		function startAutoplay() {
+			if (prefersReducedMotion) return;
+			stopAutoplay();
+			timer = setInterval(() => show(current + 1), 5000);
 		}
 
-		dots.forEach((dot, i) => dot.addEventListener('click', () => showTestimonial(i)));
-		testPrevBtn.addEventListener('click', () => showTestimonial(index - 1));
-		testNextBtn.addEventListener('click', () => showTestimonial(index + 1));
-		showTestimonial(0);
+		function stopAutoplay() {
+			if (timer) clearInterval(timer);
+			timer = null;
+		}
+
+		function goTo(i: number) {
+			show(i);
+			startAutoplay();
+		}
+
+		thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => goTo(i)));
+		prevBtn.addEventListener('click', () => goTo(current - 1));
+		nextBtn.addEventListener('click', () => goTo(current + 1));
+
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowLeft') goTo(current - 1);
+			if (e.key === 'ArrowRight') goTo(current + 1);
+		});
+
+		// Pause on hover/focus so autoplay doesn't pull the image away
+		// mid-look, and whenever the tab isn't visible.
+		section.addEventListener('pointerenter', stopAutoplay);
+		section.addEventListener('pointerleave', startAutoplay);
+		section.addEventListener('focusin', stopAutoplay);
+		section.addEventListener('focusout', startAutoplay);
+		document.addEventListener('visibilitychange', () => {
+			if (document.hidden) stopAutoplay();
+			else startAutoplay();
+		});
+
+		startAutoplay();
 	}
 </script>
 
 <style>
-	/* Full-width background bands — the band itself spans the viewport,
-	   while a nested .container keeps the actual content at the same max
-	   width as every other section instead of the background looking like
-	   a floating inset card. */
-	.band-subtle {
-		background: var(--color-bg-subtle);
-	}
-
-	.section {
-		padding-block: var(--space-2xl);
-	}
-
-	.section-intro {
-		max-width: 640px;
-	}
-
-	/* Featured-work viewer */
 	.featured {
-		border-bottom: 1px solid var(--color-border);
-		padding-block: var(--space-xl) 0;
-	}
-
-	.featured-topbar {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: var(--space-md);
+		flex-direction: column;
+		height: 100%;
+		min-height: 0;
 	}
 
-	.featured-count {
-		font-size: var(--text-small);
-		color: var(--color-text-secondary);
-		margin: 0;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.featured-all-link {
-		font-size: var(--text-small);
-		text-transform: lowercase;
-		color: var(--color-text-secondary);
-	}
-
-	.featured-all-link:hover {
-		color: var(--color-text);
-	}
-
-	/* The stage is bounded, not full-bleed — object-fit:contain inside a
-	   max-height box, generous whitespace around it, exactly so a very
-	   tall or very wide project photo never gets cropped or blown up to
-	   fill the screen. */
+	/* Bounded stage, not full-bleed — object-fit:contain within whatever
+	   space is left after the caption/controls/filmstrip take theirs, so
+	   a very tall or very wide project photo is never cropped, and — since
+	   this space is fixed rather than sized by the image itself — swapping
+	   between differently-shaped images never shifts the rest of the page. */
+	/* .featured-image-link is a flex item here (not centered-and-shrunk),
+	   so it actually receives a definite height from the flexbox layout —
+	   percentage/max-height on a child otherwise only resolves against an
+	   ancestor with a *definite* height, which align-items:center content
+	   sizing does not provide, and the image overflowed past the caption
+	   and controls below it as a result. */
 	.featured-stage {
+		flex: 1;
+		min-height: 0;
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--space-lg);
-		padding-inline: var(--space-lg);
+		padding: var(--space-md) var(--space-lg);
 	}
 
 	.featured-image-link {
-		display: block;
-		max-width: min(900px, 100%);
+		flex: 1;
+		min-height: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.featured-image {
 		display: block;
-		width: auto;
-		max-width: 100%;
-		height: auto;
-		max-height: 60vh;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
 		border-radius: var(--radius-md);
 	}
 
-	.featured-arrow {
-		flex-shrink: 0;
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 50%;
-		border: 1px solid var(--color-border);
-		background: var(--color-bg);
-		color: var(--color-text);
-		cursor: pointer;
-	}
-
-	.featured-arrow:hover {
-		background: var(--color-bg-subtle);
-	}
-
-	@media (max-width: 640px) {
-		.featured-arrow {
-			display: none;
-		}
-	}
-
 	.featured-caption {
+		flex-shrink: 0;
 		text-align: center;
-		padding-block: var(--space-lg) var(--space-md);
+		padding-block: 0 var(--space-xs);
 	}
 
 	.featured-title {
-		font-size: var(--text-large);
+		font-size: var(--text-body);
 		font-weight: var(--weight-medium);
 		color: var(--color-text);
 		text-transform: lowercase;
@@ -357,14 +208,52 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		font-size: var(--text-small);
 		color: var(--color-text-secondary);
 		text-transform: lowercase;
-		margin: var(--space-xs) 0 0;
+		margin: 2px 0 0;
 	}
 
-	/* Filmstrip — full-width horizontal scrubber, edge to edge rather than
-	   boxed inside .container, so it reads as a strip along the bottom of
-	   the viewer rather than another centered content block. */
+	.featured-all-link {
+		color: var(--color-text-secondary);
+	}
+
+	.featured-controls {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-xl);
+		padding-block: var(--space-sm);
+	}
+
+	.featured-control {
+		font-family: var(--font-sans);
+		font-size: var(--text-small);
+		text-transform: lowercase;
+		color: var(--color-text-secondary);
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+	}
+
+	.featured-control:hover {
+		color: var(--color-text);
+	}
+
+	.featured-count {
+		font-size: var(--text-small);
+		color: var(--color-text-secondary);
+		margin: 0;
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Filmstrip — flush with the bottom of the viewport (the flex column
+	   layout puts it last, and body.full-height has no page scroll, so it
+	   naturally stays pinned there without needing position:sticky).
+	   flex:1 on each thumb fills the full width evenly with no dead space
+	   on wide screens; the min-width keeps thumbs legible and switches to
+	   horizontal scroll instead of shrinking further on narrow ones. */
 	.featured-filmstrip-wrap {
-		margin-top: var(--space-lg);
+		flex-shrink: 0;
 		border-top: 1px solid var(--color-border);
 	}
 
@@ -380,9 +269,9 @@ const totalLabel = String(projects.length).padStart(2, '0');
 	}
 
 	.filmstrip-thumb {
-		flex-shrink: 0;
-		width: 84px;
-		height: 64px;
+		flex: 1 1 64px;
+		min-width: 64px;
+		height: 56px;
 		padding: 0;
 		border: 0;
 		cursor: pointer;
@@ -400,164 +289,5 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		height: 100%;
 		object-fit: cover;
 		display: block;
-	}
-
-	@media (max-width: 480px) {
-		.filmstrip-thumb {
-			width: 64px;
-			height: 48px;
-		}
-	}
-
-	/* Career timeline — a vertical rail with a dot per era; type scale
-	   steps up from earliest to most recent role so the hierarchy itself
-	   tells the story of growth across the career, not just the copy. */
-	.timeline {
-		list-style: none;
-		margin: var(--space-2xl) 0 0;
-		padding: 0;
-		position: relative;
-	}
-
-	.timeline::before {
-		content: '';
-		position: absolute;
-		left: 5px;
-		top: 6px;
-		bottom: 6px;
-		width: 1px;
-		background: var(--color-border);
-	}
-
-	.timeline-item {
-		position: relative;
-		padding-left: var(--space-xl);
-		padding-bottom: var(--space-2xl);
-	}
-
-	.timeline-item:last-child {
-		padding-bottom: 0;
-	}
-
-	.timeline-dot {
-		position: absolute;
-		left: 0;
-		top: 8px;
-		width: 11px;
-		height: 11px;
-		border-radius: 50%;
-		background: var(--color-bg);
-		border: 1px solid var(--color-text);
-	}
-
-	.timeline-item:last-child .timeline-dot {
-		background: var(--color-text);
-	}
-
-	.timeline-content h3 {
-		font-size: calc(var(--text-h4) + var(--i, 0) * 0.3rem);
-		margin-bottom: var(--space-xs);
-	}
-
-	.timeline-role {
-		font-size: var(--text-small);
-		font-weight: var(--weight-medium);
-		color: var(--color-text);
-		text-transform: lowercase;
-		margin-bottom: var(--space-sm);
-	}
-
-	.timeline-content p:last-child {
-		max-width: 560px;
-		margin-bottom: 0;
-	}
-
-	/* Testimonial */
-	.testimonial-section {
-		text-align: center;
-	}
-
-	.testimonial-track {
-		margin: 0 auto;
-		max-width: 760px;
-	}
-
-	.testimonial {
-		margin: 0;
-	}
-
-	.testimonial p {
-		font-size: var(--text-h3);
-		font-weight: var(--weight-light);
-		line-height: var(--line-height-tight);
-		color: var(--color-text);
-		margin-bottom: var(--space-md);
-	}
-
-	.testimonial cite {
-		font-style: normal;
-		font-size: var(--text-small);
-		color: var(--color-text-secondary);
-	}
-
-	.testimonial-controls {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--space-lg);
-		margin-top: var(--space-lg);
-	}
-
-	.testimonial-arrow {
-		width: 2.25rem;
-		height: 2.25rem;
-		border-radius: 50%;
-		border: 1px solid var(--color-border);
-		background: var(--color-bg);
-		color: var(--color-text);
-		cursor: pointer;
-	}
-
-	.testimonial-arrow:hover {
-		background: var(--color-bg-subtle);
-	}
-
-	.testimonial-dots {
-		display: flex;
-		gap: var(--space-xs);
-	}
-
-	.testimonial-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		border: none;
-		background: var(--color-border);
-		padding: 0;
-		cursor: pointer;
-	}
-
-	.testimonial-dot[aria-selected='true'] {
-		background: var(--color-text);
-	}
-
-	/* Contact — two columns, last section before the footer */
-	.contact-grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--space-2xl);
-		align-items: start;
-	}
-
-	.contact-details {
-		margin-top: var(--space-lg);
-		font-size: var(--text-large);
-	}
-
-	@media (max-width: 720px) {
-		.contact-grid {
-			grid-template-columns: 1fr;
-			gap: var(--space-xl);
-		}
 	}
 </style>
