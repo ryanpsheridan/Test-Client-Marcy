@@ -112,31 +112,50 @@ const totalLabel = String(projects.length).padStart(2, '0');
 		prevBtn.addEventListener('click', () => goTo(current - 1));
 		nextBtn.addEventListener('click', () => goTo(current + 1));
 
-		// Clicking the image opens that project's page — slide navigation
-		// is fully covered by the filmstrip, arrow keys, and autoplay, so
-		// the image itself doesn't need to double as a prev/next control
-		// (earlier it did, which meant clicking it could never open the
-		// project page — one element can't sensibly do both).
+		// The image splits into three horizontal zones: the outer 20% on
+		// each edge is prev/next, the center 60% opens the project page.
+		// A cursor label follows the mouse to say which zone it's over.
+		// Hover-only — mouse devices get this; touch devices keep the
+		// explicit prev/next row (mobile-only in CSS) since there's no
+		// hover to reveal the split, and a tap just opens the project.
 		// A plain button (not <a href>) on purpose — an anchor here made
 		// the browser's native link-preview status bar pop up over the
 		// filmstrip on hover, which a page can't suppress via CSS since
 		// browsers show it deliberately (so a link's real destination
 		// can't be hidden). No href to hover means no status bar.
+		const EDGE_RATIO = 0.2;
 		const hasHover = window.matchMedia('(hover: hover)').matches;
+
+		function zoneFor(e: MouseEvent): 'prev' | 'next' | 'view' {
+			const rect = link!.getBoundingClientRect();
+			const ratio = (e.clientX - rect.left) / rect.width;
+			if (ratio < EDGE_RATIO) return 'prev';
+			if (ratio > 1 - EDGE_RATIO) return 'next';
+			return 'view';
+		}
 
 		if (hasHover) {
 			link.addEventListener('mousemove', (e) => {
+				const zone = zoneFor(e);
+				cursorLabel!.textContent = zone === 'view' ? 'view project' : zone;
 				cursorLabel!.style.left = `${e.clientX}px`;
 				cursorLabel!.style.top = `${e.clientY}px`;
 			});
 
 			link.addEventListener('mouseenter', () => cursorLabel!.classList.add('visible'));
 			link.addEventListener('mouseleave', () => cursorLabel!.classList.remove('visible'));
-		}
 
-		link.addEventListener('click', () => {
-			window.location.href = `/portfolio/${link!.dataset.slug}/`;
-		});
+			link.addEventListener('click', (e) => {
+				const zone = zoneFor(e);
+				if (zone === 'prev') goTo(current - 1);
+				else if (zone === 'next') goTo(current + 1);
+				else window.location.href = `/portfolio/${link!.dataset.slug}/`;
+			});
+		} else {
+			link.addEventListener('click', () => {
+				window.location.href = `/portfolio/${link!.dataset.slug}/`;
+			});
+		}
 
 		document.addEventListener('keydown', (e) => {
 			if (e.key === 'ArrowLeft') goTo(current - 1);
