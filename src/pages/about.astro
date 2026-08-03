@@ -3,31 +3,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const focusAreas = ['brand development', 'advertising', 'consumer products', 'packaging', 'creative strategy'];
 
-// Most recent first, like LinkedIn's own experience list. `rank` is the
-// chronological order (0 = earliest) used only for the timeline's type
-// scale — kept separate from display order so "most recent = biggest"
-// still holds regardless of which order the list itself is in.
+// Most recent first, like LinkedIn's own experience list.
 const career = [
 	{
 		org: 'Wella Company',
 		role: 'Global Creative Director',
 		year: '2020–2024',
 		description: 'Shaping brand development, advertising, and consumer product strategy across the portfolio, drawing on deep expertise as a hair care specialist.',
-		rank: 2,
 	},
 	{
 		org: 'Coty',
 		role: 'Global Creative Director',
 		year: '2016–2020',
 		description: 'Continued leading global creative direction and brand development for major beauty brands.',
-		rank: 1,
 	},
 	{
 		org: 'Procter & Gamble',
 		role: 'Global Creative Director',
 		year: '2003–2016',
 		description: 'Thirteen years leading global creative direction, brand development, and creative strategy.',
-		rank: 0,
 	},
 ];
 
@@ -52,6 +46,14 @@ const testimonials = [
 	description="About Marcy Cona — two decades of creative direction, brand development, and advertising work for Wella, Clairol, Coty, and Procter & Gamble."
 >
 	<section class="container section about-grid">
+		<aside class="about-side">
+			<ul class="chip-row">
+				{focusAreas.map((area) => (
+					<li class="chip">{area}</li>
+				))}
+			</ul>
+		</aside>
+
 		<div class="about-copy">
 			<p class="eyebrow">about</p>
 			<h1>marcy cona</h1>
@@ -74,25 +76,17 @@ const testimonials = [
 				look back at a selection of that work.
 			</p>
 
-			<ul class="chip-row">
-				{focusAreas.map((area) => (
-					<li class="chip">{area}</li>
-				))}
-			</ul>
+			<img
+				src="/images/gallery/behind-the-scenes.jpg"
+				alt="Marcy Cona on set with the production team, reviewing hair styling and color during a shoot"
+				class="about-photo"
+			/>
 
 			<div class="about-actions">
 				<a href="/portfolio/" class="btn btn-primary">view the work</a>
 				<a href="/contact/" class="btn btn-secondary">get in touch</a>
 			</div>
 		</div>
-
-		<aside class="about-side">
-			<img
-				src="/images/gallery/behind-the-scenes.jpg"
-				alt="Marcy Cona on set with the production team, reviewing hair styling and color during a shoot"
-				class="about-photo"
-			/>
-		</aside>
 	</section>
 
 	<section class="band band-subtle">
@@ -100,7 +94,7 @@ const testimonials = [
 			<h2>career</h2>
 			<ol class="timeline">
 				{career.map((item) => (
-					<li class="timeline-item" style={`--i: ${item.rank}`}>
+					<li class="timeline-item">
 						<span class="timeline-dot" aria-hidden="true"></span>
 						<div class="timeline-content">
 							<h3>{item.org}</h3>
@@ -113,58 +107,69 @@ const testimonials = [
 		</div>
 	</section>
 
-	<section class="container section testimonial-section">
-		<div class="testimonial-track" id="testimonial-track">
-			{testimonials.map((t) => (
-				<blockquote class="testimonial">
-					<p>&ldquo;{t.quote}&rdquo;</p>
-					<footer>
-						<cite>{t.name}</cite>
-					</footer>
-				</blockquote>
-			))}
-		</div>
-		{testimonials.length > 1 && (
-			<div class="testimonial-controls">
-				<button type="button" class="testimonial-arrow" id="testimonial-prev" aria-label="Previous quote">&larr;</button>
-				<div class="testimonial-dots" id="testimonial-dots" role="tablist" aria-label="Select quote">
-					{testimonials.map((_, i) => (
-						<button
-							type="button"
-							class="testimonial-dot"
-							role="tab"
-							aria-selected={i === 0 ? 'true' : 'false'}
-							aria-label={`Quote ${i + 1} of ${testimonials.length}`}
-						></button>
-					))}
-				</div>
-				<button type="button" class="testimonial-arrow" id="testimonial-next" aria-label="Next quote">&rarr;</button>
+	<section class="testimonial-section">
+		<button type="button" class="testimonial-click" id="testimonial-click" aria-label="Show next quote">
+			<div class="testimonial-track" id="testimonial-track">
+				{testimonials.map((t, i) => (
+					<blockquote class:list={['testimonial', { active: i === 0 }]} aria-hidden={i !== 0}>
+						<p>&ldquo;{t.quote}&rdquo;</p>
+						<footer>
+							<cite>{t.name}</cite>
+						</footer>
+					</blockquote>
+				))}
 			</div>
-		)}
+		</button>
+		<span class="cursor-label" id="testimonial-cursor-label" aria-hidden="true">next</span>
 	</section>
 </BaseLayout>
 
 <script>
+	const wrap = document.getElementById('testimonial-click') as HTMLButtonElement | null;
 	const track = document.getElementById('testimonial-track') as HTMLDivElement | null;
-	const dotsWrap = document.getElementById('testimonial-dots');
-	const prevBtn = document.getElementById('testimonial-prev');
-	const nextBtn = document.getElementById('testimonial-next');
+	const cursorLabel = document.getElementById('testimonial-cursor-label');
 
-	if (track && dotsWrap && prevBtn && nextBtn) {
+	if (wrap && track && cursorLabel) {
 		const slides = Array.from(track.children) as HTMLElement[];
-		const dots = Array.from(dotsWrap.children) as HTMLButtonElement[];
-		let index = 0;
 
-		function show(i: number) {
-			index = (i + slides.length) % slides.length;
-			slides.forEach((slide, n) => slide.toggleAttribute('hidden', n !== index));
-			dots.forEach((dot, n) => dot.setAttribute('aria-selected', n === index ? 'true' : 'false'));
+		if (slides.length > 1) {
+			let index = 0;
+
+			function show(i: number) {
+				index = (i + slides.length) % slides.length;
+				slides.forEach((slide, n) => {
+					slide.classList.toggle('active', n === index);
+					slide.setAttribute('aria-hidden', n === index ? 'false' : 'true');
+				});
+			}
+
+			function zoneFor(e: MouseEvent): 'prev' | 'next' {
+				const rect = wrap!.getBoundingClientRect();
+				return e.clientX - rect.left > rect.width / 2 ? 'next' : 'prev';
+			}
+
+			wrap.addEventListener('click', (e) => {
+				show(zoneFor(e) === 'next' ? index + 1 : index - 1);
+			});
+
+			const hasHover = window.matchMedia('(hover: hover)').matches;
+			if (hasHover) {
+				wrap.addEventListener('mousemove', (e) => {
+					cursorLabel!.textContent = zoneFor(e);
+					cursorLabel!.style.left = `${e.clientX}px`;
+					cursorLabel!.style.top = `${e.clientY}px`;
+				});
+				wrap.addEventListener('mouseenter', () => cursorLabel!.classList.add('visible'));
+				wrap.addEventListener('mouseleave', () => cursorLabel!.classList.remove('visible'));
+			}
+
+			document.addEventListener('keydown', (e) => {
+				if (e.key === 'ArrowLeft') show(index - 1);
+				if (e.key === 'ArrowRight') show(index + 1);
+			});
+		} else {
+			wrap.style.cursor = 'default';
 		}
-
-		dots.forEach((dot, i) => dot.addEventListener('click', () => show(i)));
-		prevBtn.addEventListener('click', () => show(index - 1));
-		nextBtn.addEventListener('click', () => show(index + 1));
-		show(0);
 	}
 </script>
 
@@ -177,15 +182,19 @@ const testimonials = [
 		background: var(--color-bg-subtle);
 	}
 
+	/* Chips pinned to a narrow left rail, content column centered in the
+	   remaining space — an editorial layout (text column with generous
+	   margins) rather than the copy simply filling whatever's left. */
 	.about-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 320px;
+		grid-template-columns: 200px 1fr;
 		gap: var(--space-3xl);
 		align-items: start;
 	}
 
 	.about-copy {
 		max-width: 640px;
+		margin-inline: auto;
 	}
 
 	.eyebrow {
@@ -208,10 +217,10 @@ const testimonials = [
 
 	.chip-row {
 		list-style: none;
-		margin: var(--space-xl) 0 0;
+		margin: 0;
 		padding: 0;
 		display: flex;
-		flex-wrap: wrap;
+		flex-direction: column;
 		gap: var(--space-sm);
 	}
 
@@ -222,6 +231,7 @@ const testimonials = [
 		border-radius: var(--radius-sm);
 		padding: var(--space-xs) var(--space-md);
 		text-transform: lowercase;
+		text-align: center;
 	}
 
 	.about-actions {
@@ -237,7 +247,10 @@ const testimonials = [
 	}
 
 	.about-photo {
+		display: block;
 		width: 100%;
+		max-width: 420px;
+		margin: var(--space-xl) auto;
 		border-radius: var(--radius-lg);
 	}
 
@@ -248,7 +261,16 @@ const testimonials = [
 
 		.about-side {
 			position: static;
-			max-width: 400px;
+		}
+
+		.chip-row {
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+
+		.chip {
+			flex: 0 0 auto;
 		}
 	}
 
@@ -297,7 +319,7 @@ const testimonials = [
 	}
 
 	.timeline-content h3 {
-		font-size: calc(var(--text-h4) + var(--i, 0) * 0.3rem);
+		font-size: var(--text-h4);
 		margin-bottom: var(--space-xs);
 	}
 
@@ -314,18 +336,48 @@ const testimonials = [
 		margin-bottom: 0;
 	}
 
-	/* Testimonial */
+	/* Testimonial — generous min-height with everything centered inside it
+	   (not just top-padded), so a single short quote still reads as a
+	   deliberate, breathing moment rather than a cramped box. */
 	.testimonial-section {
+		position: relative;
+		min-height: 60vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-block: var(--space-3xl);
+	}
+
+	.testimonial-click {
+		display: block;
+		width: 100%;
+		max-width: 760px;
+		margin: 0 auto;
+		padding: 0;
+		border: 0;
+		background: none;
+		cursor: pointer;
 		text-align: center;
 	}
 
+	/* All slides stacked in the same grid cell (not display:none'd via
+	   [hidden]) so the track's height is always the tallest quote, not
+	   whichever one happens to be active — swapping slides never changes
+	   the section's height, which was shifting the whole page below it. */
 	.testimonial-track {
-		margin: 0 auto;
-		max-width: 760px;
+		display: grid;
 	}
 
 	.testimonial {
+		grid-column: 1;
+		grid-row: 1;
 		margin: 0;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+
+	.testimonial.active {
+		opacity: 1;
 	}
 
 	.testimonial p {
@@ -342,44 +394,25 @@ const testimonials = [
 		color: var(--color-text-secondary);
 	}
 
-	.testimonial-controls {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--space-lg);
-		margin-top: var(--space-lg);
+	/* Same cursor-following prev/next hint as the homepage viewer —
+	   left half of the quote is prev, right half is next. No visible
+	   arrows/dots; hover-only (touch devices just tap left/right). */
+	.cursor-label {
+		position: fixed;
+		left: 0;
+		top: 0;
+		transform: translate(calc(-100% - 14px), -50%);
+		font-size: var(--text-small);
+		font-weight: var(--weight-medium);
+		color: var(--color-text-secondary);
+		text-transform: lowercase;
+		pointer-events: none;
+		opacity: 0;
+		z-index: 10;
+		transition: opacity 0.1s ease;
 	}
 
-	.testimonial-arrow {
-		width: 2.25rem;
-		height: 2.25rem;
-		border-radius: 50%;
-		border: 1px solid var(--color-border);
-		background: var(--color-bg);
-		color: var(--color-text);
-		cursor: pointer;
-	}
-
-	.testimonial-arrow:hover {
-		background: var(--color-bg-subtle);
-	}
-
-	.testimonial-dots {
-		display: flex;
-		gap: var(--space-xs);
-	}
-
-	.testimonial-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		border: none;
-		background: var(--color-border);
-		padding: 0;
-		cursor: pointer;
-	}
-
-	.testimonial-dot[aria-selected='true'] {
-		background: var(--color-text);
+	.cursor-label.visible {
+		opacity: 1;
 	}
 </style>
